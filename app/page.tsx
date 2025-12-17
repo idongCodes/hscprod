@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import ContactForm from "./ContactForm"; // <--- Import the new component
+import ContactForm from "./ContactForm"; 
+import Testimonials from "./Testimonials"; // <--- 1. Import it
 
 export default function Home() {
   return (
@@ -43,10 +44,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION 2: CONTACT FORM */}
+      {/* SECTION 2: TESTIMONIALS */}
+      {/* 2. Added here, above the contact form */}
+      <Testimonials />
+
+      {/* SECTION 3: CONTACT FORM */}
       <section className="relative py-24 px-4 border-t border-white/10">
         <div className="relative z-10">
-           {/* We just drop the component in here! */}
            <ContactForm />
         </div>
       </section>
