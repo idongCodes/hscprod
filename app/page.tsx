@@ -2,7 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import ContactForm from "./ContactForm"; 
 import Testimonials from "./Testimonials";
-import FadeIn from "./FadeIn"; // <--- 1. Import the wrapper
+import FadeIn from "./FadeIn";
+import Benefits from "./Benefits"; // <--- 1. Import it
 
 export default function Home() {
   return (
@@ -49,12 +50,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION 2: TESTIMONIALS (Wrapped in FadeIn) */}
+      {/* SECTION 2: BENEFITS (Added Here) */}
+      <FadeIn delay={0.2}>
+        <Benefits />
+      </FadeIn>
+
+      {/* SECTION 3: TESTIMONIALS */}
       <FadeIn delay={0.2}>
         <Testimonials />
       </FadeIn>
 
-      {/* SECTION 3: CONTACT FORM (Wrapped in FadeIn) */}
+      {/* SECTION 4: CONTACT FORM */}
       <section className="relative py-24 px-4 border-t border-white/10">
         <div className="relative z-10">
            <FadeIn delay={0.2}>
