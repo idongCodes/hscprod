@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import FadeIn from "../FadeIn";
 
 export default function About() {
@@ -29,10 +30,38 @@ export default function About() {
 
             {/* 2. THE BIO TEXT */}
             <div className="text-center md:text-left max-w-2xl">
-              {/* UPDATED HEADING */}
-              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
                 HSC <span className="text-purple-500">Productions</span>
               </h1>
+
+              {/* --- NEW SECTION: PERSONAL DETAILS --- */}
+              <div className="flex flex-wrap justify-center md:justify-start gap-4 mb-6 text-sm font-medium text-gray-400">
+                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
+                   <span>📍 Brooklyn, NY</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
+                   <span>🇮🇪 Irish</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
+                   <span>🎂 24 (Leo)</span>
+                </div>
+              </div>
+
+              {/* --- NEW SECTION: GENRES --- */}
+              <div className="mb-8">
+                <p className="text-xs text-purple-400 uppercase tracking-widest font-bold mb-3">Specializing In</p>
+                <div className="flex flex-wrap justify-center md:justify-start gap-2">
+                  <span className="px-4 py-1 rounded-full border border-purple-500/50 text-white text-sm bg-purple-500/10">
+                    NY Drill
+                  </span>
+                  <span className="px-4 py-1 rounded-full border border-gray-700 text-gray-300 text-sm hover:border-white transition-colors">
+                    Dark Trap
+                  </span>
+                  <span className="px-4 py-1 rounded-full border border-gray-700 text-gray-300 text-sm hover:border-white transition-colors">
+                    Jersey Club
+                  </span>
+                </div>
+              </div>
               
               <div className="space-y-6 text-gray-300 text-lg leading-relaxed">
                 <p>
@@ -61,6 +90,27 @@ export default function About() {
                   <h3 className="text-2xl font-bold text-white">24/7</h3>
                   <p className="text-sm text-gray-500 uppercase tracking-wider">Grind</p>
                 </div>
+              </div>
+
+              {/* BUTTONS (Stacked) */}
+              <div className="mt-8 flex flex-col gap-4 items-center md:items-start">
+                
+                {/* Beats/Tracks Button */}
+                <Link 
+                  href="/media" 
+                  className="w-full md:w-auto text-center px-8 py-3 rounded-full border border-gray-600 text-gray-200 font-medium hover:border-purple-500 hover:text-white transition-colors backdrop-blur-sm bg-black/30"
+                >
+                  Beats/Tracks
+                </Link>
+
+                {/* Work with Me Button */}
+                <Link 
+                  href="/contact" 
+                  className="w-full md:w-auto text-center px-8 py-3 rounded-full bg-purple-600 text-white font-medium hover:bg-purple-700 transition-all shadow-[0_0_20px_rgba(147,51,234,0.3)]"
+                >
+                  Work with Me
+                </Link>
+
               </div>
 
             </div>
