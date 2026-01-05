@@ -4,7 +4,10 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full bg-black border-t border-white/10 py-8 text-center md:text-left">
+    // FIX: Changed 'py-8' to 'pt-8 pb-32 md:pb-8'
+    // This adds huge bottom padding on mobile (pb-32) so content clears the nav
+    // On desktop (md:pb-8), it returns to normal size
+    <footer className="w-full bg-black border-t border-white/10 pt-8 pb-32 md:pb-8 text-center md:text-left">
       <div className="max-w-screen-xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
         
         {/* Left Side: Copyright */}
