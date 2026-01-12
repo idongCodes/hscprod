@@ -10,31 +10,42 @@ export default function TestimonialForm() {
     message: ""
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    // Get existing testimonials from localStorage or use empty array
-    const existingTestimonials = JSON.parse(localStorage.getItem('testimonials') || '[]');
-    
-    // Add new testimonial
-    const newTestimonial = {
-      id: Date.now(),
-      name: formData.name,
-      title: formData.profession,
-      text: formData.message
-    };
-    
-    existingTestimonials.push(newTestimonial);
-    localStorage.setItem('testimonials', JSON.stringify(existingTestimonials));
-    
-    // Trigger a custom event to notify Testimonials component
-    window.dispatchEvent(new CustomEvent('newTestimonial', { detail: newTestimonial }));
-    
-    setIsSubmitted(true);
-    setFormData({ name: "", profession: "", message: "" });
-    
-    setTimeout(() => setIsSubmitted(false), 3000);
+    try {
+      const response = await fetch('/api/testimonials/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          title: formData.profession,
+          message: formData.message
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to submit testimonial');
+      
+      const newTestimonial = await response.json();
+      
+      // Trigger a custom event to notify Testimonials component
+      window.dispatchEvent(new CustomEvent('newTestimonial', { detail: newTestimonial }));
+      
+      setIsSubmitted(true);
+      setFormData({ name: "", profession: "", message: "" });
+      
+      setTimeout(() => setIsSubmitted(false), 3000);
+    } catch (error) {
+      console.error('Error submitting testimonial:', error);
+      alert('Error submitting testimonial. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -113,9 +124,10 @@ export default function TestimonialForm() {
 
               <button
                 type="submit"
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 rounded-lg transition-all shadow-[0_0_20px_rgba(147,51,234,0.3)]"
+                disabled={isSubmitting}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 rounded-lg transition-all shadow-[0_0_20px_rgba(147,51,234,0.3)] disabled:opacity-50"
               >
-                Submit Testimonial
+                {isSubmitting ? "Submitting..." : "Submit Testimonial"}
               </button>
             </form>
           )}

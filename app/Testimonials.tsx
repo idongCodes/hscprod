@@ -1,49 +1,90 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Testimonial } from "@/lib/database";
 
 export default function Testimonials() {
-  const [reviews, setReviews] = useState(() => {
-    // Load testimonials from localStorage on initial render
-    const savedTestimonials = JSON.parse(localStorage.getItem('testimonials') || '[]');
-    const defaultReviews = [
-      {
-        name: "Yung Fader",
-        title: "Producer",
-        text: "The drum kits are absolutely lethal. Cleanest 808s I've ever used in a production. HSC really knows how to mix the low end."
-      },
-      {
-        name: "Melody Queen",
-        title: "R&B Artist",
-        text: "HSC created a custom beat that fit my voice perfectly. The vibe in the studio is unmatched—he gets the best performance out of you."
-      },
-      {
-        name: "Da Architect",
-        title: "Sound Engineer",
-        text: "Mixing these stems was a breeze. High quality recording and professional organization makes my life so much easier."
-      },
-      {
-        name: "Spitfire",
-        title: "Rapper",
-        text: "Bought a lease, recorded the track, and it's already doing numbers on Spotify. HSC production value is industry standard."
-      },
-      {
-        name: "Neon Keys",
-        title: "Producer",
-        text: "Collab was smooth. We sent files back and forth and made a banger in 48 hours. Looking forward to the next project."
-      },
-      {
-        name: "Vocalz Only",
-        title: "Artist",
-        text: "Finally found a producer who actually listens to the vision instead of just forcing their own style. 10/10 recommend."
-      }
-    ];
-    return savedTestimonials.length > 0 ? [...savedTestimonials, ...defaultReviews] : defaultReviews;
-  });
+  const [reviews, setReviews] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Listen for new testimonials
+    const loadTestimonials = async () => {
+      try {
+        const response = await fetch('/api/testimonials');
+        if (!response.ok) throw new Error('Failed to fetch testimonials');
+        const testimonials = await response.json();
+        setReviews(testimonials);
+      } catch (error) {
+        console.error('Error loading testimonials:', error);
+        // Fallback to default testimonials if API fails
+        setReviews([
+          {
+            id: "1",
+            name: "Yung Fader",
+            title: "Producer",
+            message: "The drum kits are absolutely lethal. Cleanest 808s I've ever used in a production. HSC really knows how to mix the low end.",
+            is_approved: true,
+            created_at: "",
+            updated_at: ""
+          },
+          {
+            id: "2",
+            name: "Melody Queen",
+            title: "R&B Artist",
+            message: "HSC created a custom beat that fit my voice perfectly. The vibe in the studio is unmatched—he gets the best performance out of you.",
+            is_approved: true,
+            created_at: "",
+            updated_at: ""
+          },
+          {
+            id: "3",
+            name: "Da Architect",
+            title: "Sound Engineer",
+            message: "Mixing these stems was a breeze. High quality recording and professional organization makes my life so much easier.",
+            is_approved: true,
+            created_at: "",
+            updated_at: ""
+          },
+          {
+            id: "4",
+            name: "Spitfire",
+            title: "Rapper",
+            message: "Bought a lease, recorded the track, and it's already doing numbers on Spotify. HSC production value is industry standard.",
+            is_approved: true,
+            created_at: "",
+            updated_at: ""
+          },
+          {
+            id: "5",
+            name: "Neon Keys",
+            title: "Producer",
+            message: "Collab was smooth. We sent files back and forth and made a banger in 48 hours. Looking forward to the next project.",
+            is_approved: true,
+            created_at: "",
+            updated_at: ""
+          },
+          {
+            id: "6",
+            name: "Vocalz Only",
+            title: "Artist",
+            message: "Finally found a producer who actually listens to the vision instead of just forcing their own style. 10/10 recommend.",
+            is_approved: true,
+            created_at: "",
+            updated_at: ""
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTestimonials();
+  }, []);
+
+  // Listen for new testimonials from the form
+  useEffect(() => {
     const handleNewTestimonial = (event: CustomEvent) => {
+      // Add new testimonial to the top of the list
       setReviews(prevReviews => [event.detail, ...prevReviews]);
     };
 
@@ -53,6 +94,16 @@ export default function Testimonials() {
       window.removeEventListener('newTestimonial', handleNewTestimonial as EventListener);
     };
   }, []);
+
+  if (loading) {
+    return (
+      <section className="py-24 bg-black border-t border-white/10 relative overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-4 text-center">
+          <div className="text-white text-xl">Loading testimonials...</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-24 bg-black border-t border-white/10 relative overflow-hidden">
@@ -86,7 +137,7 @@ export default function Testimonials() {
                         </div>
                     </div>
                     {/* Blurb */}
-                    <p className="text-gray-300 italic leading-relaxed">&ldquo;{review.text}&rdquo;</p>
+                    <p className="text-gray-300 italic leading-relaxed">&ldquo;{review.message}&rdquo;</p>
                 </div>
             ))}
           </div>
