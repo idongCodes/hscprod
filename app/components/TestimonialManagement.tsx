@@ -45,19 +45,25 @@ export default function TestimonialManagement() {
   };
 
   const handleApprove = async (id: string) => {
+    console.log('handleApprove called with id:', id);
     setActionLoading(id);
     setMessage("");
     
     try {
+      const requestBody = { id, action: 'approve' };
+      console.log('Sending approve request:', requestBody);
+      
       const response = await fetch('/api/admin/testimonials', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id, action: 'approve' }),
+        body: JSON.stringify(requestBody),
       });
       
+      console.log('Approve response status:', response.status);
       const result = await response.json();
+      console.log('Approve response body:', result);
       
       if (result.success) {
         setMessage("✅ Testimonial approved successfully");
@@ -66,6 +72,7 @@ export default function TestimonialManagement() {
         setMessage(`❌ Error: ${result.error}`);
       }
     } catch (error) {
+      console.error('Approve error:', error);
       setMessage("❌ Failed to approve testimonial");
     } finally {
       setActionLoading(null);
@@ -73,19 +80,25 @@ export default function TestimonialManagement() {
   };
 
   const handleReject = async (id: string) => {
+    console.log('handleReject called with id:', id);
     setActionLoading(id);
     setMessage("");
     
     try {
+      const requestBody = { id, action: 'reject' };
+      console.log('Sending reject request:', requestBody);
+      
       const response = await fetch('/api/admin/testimonials', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id, action: 'reject' }),
+        body: JSON.stringify(requestBody),
       });
       
+      console.log('Reject response status:', response.status);
       const result = await response.json();
+      console.log('Reject response body:', result);
       
       if (result.success) {
         setMessage("✅ Testimonial rejected successfully");
@@ -94,6 +107,7 @@ export default function TestimonialManagement() {
         setMessage(`❌ Error: ${result.error}`);
       }
     } catch (error) {
+      console.error('Reject error:', error);
       setMessage("❌ Failed to reject testimonial");
     } finally {
       setActionLoading(null);
