@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/database';
+
+// Simple in-memory storage for new testimonials
+const pendingTestimonials: any[] = [];
 
 export async function POST(request: NextRequest) {
   try {
-    const db = await getDatabase();
     const body = await request.json();
     const { name, title, message } = body;
 
@@ -14,13 +15,6 @@ export async function POST(request: NextRequest) {
     const id = Date.now().toString();
     const now = new Date().toISOString();
     
-    const stmt = db.prepare(`
-      INSERT INTO testimonials (id, name, title, message, is_approved, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `);
-    
-    await stmt.run(id, name, title, message, 0, now, now);
-    
     const newTestimonial = {
       id,
       name,
@@ -28,12 +22,32 @@ export async function POST(request: NextRequest) {
       message,
       is_approved: false,
       created_at: now,
-      updated_at: now
+      updated_at: now,
+      source: 'pending'
     };
-
-    return NextResponse.json(newTestimonial, { status: 201 });
+    
+    // Store in memory (you'll get email notification to manually approve)
+    pendingTestimonials.push(newTestimonial);
+    
+    console.log('New testimonial submitted:', newTestimonial);
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Testimonial submitted successfully! It will be reviewed and added shortly.',
+      testimonial: newTestimonial
+    });
   } catch (error) {
     console.error('Error creating testimonial:', error);
     return NextResponse.json({ error: 'Failed to create testimonial' }, { status: 500 });
+  }
+}
+
+// Admin endpoint to get pending testimonials
+export async function GET() {
+  try {
+    return NextResponse.json(pendingTestimonials);
+  } catch (error) {
+    console.error('Error fetching pending testimonials:', error);
+    return NextResponse.json({ error: 'Failed to fetch pending testimonials' }, { status: 500 });
   }
 }
