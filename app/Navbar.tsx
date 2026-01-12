@@ -1,10 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useAuth } from "./AuthProvider";
 
 export default function Navbar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
+
   const pathname = usePathname();
 
   const isActive = (path: string) => pathname === path;
@@ -77,13 +82,33 @@ export default function Navbar() {
               <Link 
                 key={item.name}
                 href={item.href} 
-                className={`hover:text-purple-400 transition-colors no-underline ${isActive(item.href) ? "text-white font-bold" : ""}`}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive(item.href) 
+                    ? "bg-purple-600 text-white" 
+                    : "text-gray-300 hover:bg-purple-600 hover:text-white"
+                }`}
               >
-                {item.name}
+                <div className="flex items-center gap-2">
+                  {item.icon}
+                  <span>{item.name}</span>
+                </div>
               </Link>
             ))}
           </div>
-          
+
+          {/* LOGOUT ICON (only when authenticated) */}
+          {isAuthenticated && (
+            <button
+              onClick={logout}
+              className="hidden md:flex items-center justify-center w-10 h-10 text-gray-600 hover:text-red-400 transition-colors bg-transparent border-none cursor-pointer rounded-full hover:bg-red-400/10"
+              title="Logout"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          )}
+
         </div>
       </nav>
 
@@ -112,6 +137,20 @@ export default function Navbar() {
               <span className="sr-only">{item.name}</span>
             </Link>
           ))}
+
+          {/* Logout Icon (Mobile Only) */}
+          {isAuthenticated && (
+            <button
+              onClick={logout}
+              className="md:hidden flex items-center justify-center text-gray-400 hover:text-red-400 transition-colors bg-transparent border-none cursor-pointer"
+              title="Logout"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span className="sr-only">Logout</span>
+            </button>
+          )}
 
         </div>
       </div>
