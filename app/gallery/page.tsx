@@ -3,7 +3,15 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import FadeIn from "../FadeIn";
-import { GalleryMedia } from "@/lib/database";
+
+interface GalleryMedia {
+  id: string;
+  title: string;
+  media_type: 'video' | 'image';
+  file_url: string;
+  thumbnail_url?: string;
+  description?: string;
+}
 
 export default function Gallery() {
   const [mediaItems, setMediaItems] = useState<GalleryMedia[]>([]);
@@ -18,7 +26,6 @@ export default function Gallery() {
         setMediaItems(galleryMedia);
       } catch (error) {
         console.error('Error loading gallery media:', error);
-        // Fallback to empty array if API fails
         setMediaItems([]);
       } finally {
         setLoading(false);
@@ -60,7 +67,6 @@ export default function Gallery() {
                 <div 
                   className="group relative aspect-video bg-white/5 border border-white/10 rounded-xl overflow-hidden shadow-lg hover:border-purple-500/50 transition-colors"
                 >
-                  {/* VIDEO LOGIC */}
                   {item.media_type === 'video' ? (
                     <video 
                       controls 
@@ -72,7 +78,6 @@ export default function Gallery() {
                       Your browser does not support video tag.
                     </video>
                   ) : (
-                    /* IMAGE LOGIC */
                     <Image 
                       src={item.file_url} 
                       alt={item.title || 'Gallery item'} 
@@ -82,7 +87,6 @@ export default function Gallery() {
                     />
                   )}
                   
-                  {/* Title/Description Overlay */}
                   <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                     {item.title && (
                       <p className="text-white text-sm font-medium truncate">

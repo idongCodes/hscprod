@@ -1,13 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/database';
-import { sendTestimonialApprovalEmail, TestimonialData } from '@/lib/email';
+
+const manualTestimonials: any[] = [
+  {
+    id: '1',
+    name: 'Yung Fader',
+    title: 'Producer',
+    message: 'The drum kits are absolutely lethal. Cleanest 808s I\'ve ever used in a production. HSC really knows how to mix the low end.',
+    is_approved: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    source: 'manual'
+  },
+  {
+    id: '2',
+    name: 'Melody Queen',
+    title: 'R&B Artist',
+    message: 'HSC created a custom beat that fit my voice perfectly. The vibe in the studio is unmatched—he gets the best performance out of you.',
+    is_approved: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    source: 'manual'
+  },
+  {
+    id: '3',
+    name: 'Da Architect',
+    title: 'Sound Engineer',
+    message: 'Mixing these stems was a breeze. High quality recording and professional organization makes my life so much easier.',
+    is_approved: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    source: 'manual'
+  }
+];
 
 export async function GET() {
   try {
-    const db = await getDatabase();
-    const stmt = db.prepare('SELECT * FROM testimonials WHERE is_approved = 1 ORDER BY created_at DESC');
-    const testimonials = await stmt.all();
-    return NextResponse.json(testimonials);
+    return NextResponse.json(manualTestimonials);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
     return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
@@ -16,45 +44,28 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const db = await getDatabase();
     const { name, title, message } = await request.json();
     
     if (!name || !title || !message) {
       return NextResponse.json({ error: 'Name, title, and message are required' }, { status: 400 });
     }
     
-    // Generate unique ID
     const id = Date.now().toString();
-    
-    // Insert testimonial (pending approval by default)
-    const stmt = db.prepare(`
-      INSERT INTO testimonials (id, name, title, message, is_approved)
-      VALUES (?, ?, ?, ?, 0)
-    `);
-    
-    await stmt.run(id, name, title, message);
-    
-    // Get the inserted testimonial for email
-    const testimonial = await db.prepare('SELECT * FROM testimonials WHERE id = ?').get(id);
-    
-    // Send email notification
-    try {
-      await sendTestimonialApprovalEmail(testimonial as TestimonialData);
-    } catch (emailError) {
-      console.error('Failed to send email notification:', emailError);
-      // Don't fail the request if email fails
-    }
+    const newTestimonial = {
+      id,
+      name,
+      title,
+      message,
+      is_approved: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      source: 'pending'
+    };
     
     return NextResponse.json({ 
       success: true, 
-      message: 'Testimonial submitted successfully! It will appear on the site once approved.',
-      testimonial: {
-        id,
-        name,
-        title,
-        message,
-        is_approved: 0
-      }
+      message: 'Testimonial submitted successfully! It will appear on site once approved.',
+      testimonial: newTestimonial
     });
   } catch (error) {
     console.error('Error submitting testimonial:', error);

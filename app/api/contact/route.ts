@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createContactSubmission } from '@/lib/database';
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +9,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const submission = await createContactSubmission({ name, email, message });
+    const submission = {
+      id: Date.now().toString(),
+      name,
+      email,
+      message,
+      created_at: new Date().toISOString()
+    };
+    
     return NextResponse.json(submission, { status: 201 });
   } catch (error) {
     console.error('Error creating contact submission:', error);

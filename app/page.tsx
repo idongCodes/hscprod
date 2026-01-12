@@ -10,10 +10,8 @@ export default function Home() {
   return (
     <div className="w-full bg-black">
       
-      {/* SECTION 1: HERO */}
       <section className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden">
         
-        {/* Layer 1: Background Image */}
         <div className="absolute inset-0 z-0 opacity-30">
           <Image 
             src="/images/hero.jpg" 
@@ -25,10 +23,8 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
         </div>
 
-        {/* Layer 2: Purple Glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-purple-900/40 blur-[100px] rounded-full pointer-events-none z-0" />
 
-        {/* Layer 3: Content (Wrapped in FadeIn) */}
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <FadeIn>
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6 drop-shadow-xl">
@@ -51,20 +47,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION 2: BENEFITS (Added Here) */}
       <FadeIn delay={0.2}>
         <Benefits />
       </FadeIn>
 
-      {/* SECTION 3: TESTIMONIALS */}
       <FadeIn delay={0.2}>
         <Testimonials />
       </FadeIn>
 
-      {/* SECTION 4: TESTIMONIAL FORM */}
       <TestimonialForm />
 
-      {/* SECTION 5: CONTACT FORM */}
       <section className="relative py-24 px-4 border-t border-white/10">
         <div className="relative z-10">
            <FadeIn delay={0.2}>
