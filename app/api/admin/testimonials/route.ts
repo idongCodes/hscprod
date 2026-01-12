@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
 
 export async function GET() {
   try {
+    const db = await getDatabase();
     // Get all testimonials (both approved and pending)
     const stmt = db.prepare('SELECT * FROM testimonials ORDER BY created_at DESC');
     const testimonials = await stmt.all();
@@ -15,6 +16,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const db = await getDatabase();
     const body = await request.json();
     console.log('POST request body:', body);
     
@@ -64,6 +66,7 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const db = await getDatabase();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     
