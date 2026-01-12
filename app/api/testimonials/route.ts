@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
 import { sendTestimonialApprovalEmail, TestimonialData } from '@/lib/email';
 
 export async function GET() {
   try {
+    const db = await getDatabase();
     const stmt = db.prepare('SELECT * FROM testimonials WHERE is_approved = 1 ORDER BY created_at DESC');
     const testimonials = await stmt.all();
     return NextResponse.json(testimonials);
@@ -15,6 +16,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const db = await getDatabase();
     const { name, title, message } = await request.json();
     
     if (!name || !title || !message) {
