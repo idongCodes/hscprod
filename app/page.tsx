@@ -2,8 +2,9 @@ import Link from "next/link";
 import Image from "next/image";
 import ContactForm from "./ContactForm"; 
 import Testimonials from "./Testimonials";
+import TestimonialForm from "./TestimonialForm";
 import FadeIn from "./FadeIn";
-import Benefits from "./Benefits"; // <--- 1. Import it
+import Benefits from "./Benefits";
 
 export default function Home() {
   return (
@@ -60,7 +61,10 @@ export default function Home() {
         <Testimonials />
       </FadeIn>
 
-      {/* SECTION 4: CONTACT FORM */}
+      {/* SECTION 4: TESTIMONIAL FORM */}
+      <TestimonialForm />
+
+      {/* SECTION 5: CONTACT FORM */}
       <section className="relative py-24 px-4 border-t border-white/10">
         <div className="relative z-10">
            <FadeIn delay={0.2}>

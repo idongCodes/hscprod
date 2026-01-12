@@ -63,7 +63,7 @@ export default function Navbar() {
           <Link href="/">
             <div className="relative w-10 h-10 overflow-hidden rounded-full border border-purple-500/50 hover:border-purple-400 transition-colors shadow-[0_0_15px_rgba(168,85,247,0.4)]">
               <Image 
-                src="/images/logo.jpg" 
+                src="/images/hsc_logo_blk_bg.JPG" 
                 alt="HSC Prod" 
                 fill={true}
                 className="object-cover"
