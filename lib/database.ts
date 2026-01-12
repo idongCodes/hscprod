@@ -1,4 +1,5 @@
 import { db } from './sqlite';
+import { sendTestimonialApprovalEmail } from './email';
 
 export interface AudioTrack {
   id: string;
@@ -109,13 +110,22 @@ export async function createTestimonial(testimonial: Omit<Testimonial, 'id' | 'c
   
   stmt.run(id, testimonial.name, testimonial.title, testimonial.message, 0, now, now);
   
-  return {
+  const newTestimonial = {
     id,
     ...testimonial,
     is_approved: false,
     created_at: now,
     updated_at: now
   };
+
+  // Send approval email
+  try {
+    await sendTestimonialApprovalEmail(newTestimonial);
+  } catch (error) {
+    console.error('Failed to send approval email:', error);
+  }
+
+  return newTestimonial;
 }
 
 // Contact submissions
