@@ -53,11 +53,19 @@ let dbInitialized = false;
 async function initializeDatabase() {
   if (dbInitialized) return db;
   
+  // Debug: Log environment variables (without exposing sensitive data)
+  console.log('Environment check:');
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('POSTGRES_URL exists:', !!process.env.POSTGRES_URL);
+  console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
+  console.log('PRISMA_DATABASE_URL exists:', !!process.env.PRISMA_DATABASE_URL);
+  
   // Force Postgres in production when URL is available
   if (process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL) {
     // Use Vercel Postgres in production
     console.log('Using Vercel Postgres in production');
     const postgresUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL || '';
+    console.log('Postgres URL length:', postgresUrl.length);
     const pg = postgres(postgresUrl);
     
     // Initialize Postgres tables if needed
@@ -146,9 +154,22 @@ async function initializeDatabase() {
       })
     };
   } else {
-    // Use SQLite in development
-    console.log('Using SQLite in development');
-    db = sqliteDb;
+    // Use SQLite in development ONLY
+    if (isProduction) {
+      console.error('ERROR: No database URL found in production! Cannot use SQLite in serverless environment.');
+      console.error('Please set POSTGRES_URL, DATABASE_URL, or PRISMA_DATABASE_URL environment variables.');
+      // Return a mock database that throws errors to prevent silent failures
+      db = {
+        prepare: (query: string) => ({
+          all: async () => { throw new Error('Database not configured in production'); },
+          get: async () => { throw new Error('Database not configured in production'); },
+          run: async () => { throw new Error('Database not configured in production'); }
+        })
+      };
+    } else {
+      console.log('Using SQLite in development');
+      db = sqliteDb;
+    }
   }
   
   dbInitialized = true;
