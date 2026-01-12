@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getTestimonials, updateTestimonial, deleteTestimonial } from '@/lib/testimonial-storage';
+import { getGlobalTestimonials, updateGlobalTestimonial, deleteGlobalTestimonial } from '@/lib/global-testimonials';
 
 export async function GET() {
   try {
-    const testimonials = getTestimonials();
+    const testimonials = getGlobalTestimonials();
     console.log('Admin API returning testimonials:', testimonials.length);
     return NextResponse.json(testimonials);
   } catch (error) {
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
     
     const isApproved = action === 'approve' ? 1 : 0;
-    const updated = updateTestimonial(id, { is_approved: isApproved });
+    const updated = updateGlobalTestimonial(id, { is_approved: isApproved });
     
     if (!updated) {
       return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
@@ -49,7 +49,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Testimonial ID is required' }, { status: 400 });
     }
     
-    const deleted = deleteTestimonial(id);
+    const deleted = deleteGlobalTestimonial(id);
     
     if (!deleted) {
       return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });

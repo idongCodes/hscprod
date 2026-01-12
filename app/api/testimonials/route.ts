@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getTestimonials, addTestimonial } from '@/lib/testimonial-storage';
+import { getGlobalTestimonials, addGlobalTestimonial } from '@/lib/global-testimonials';
 
 export async function GET() {
   try {
     // Return only approved testimonials for public display
-    const allTestimonials = getTestimonials();
+    const allTestimonials = getGlobalTestimonials();
     const approvedTestimonials = allTestimonials.filter(t => t.is_approved === true);
     return NextResponse.json(approvedTestimonials);
   } catch (error) {
@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
       source: 'pending'
     };
     
-    // Add to persistent storage
-    addTestimonial(newTestimonial);
+    // Add to global storage
+    addGlobalTestimonial(newTestimonial);
     
     console.log('New testimonial submitted:', newTestimonial);
     
