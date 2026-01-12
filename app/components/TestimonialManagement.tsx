@@ -72,6 +72,34 @@ export default function TestimonialManagement() {
     }
   };
 
+  const handleReject = async (id: string) => {
+    setActionLoading(id);
+    setMessage("");
+    
+    try {
+      const response = await fetch('/api/admin/testimonials', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, action: 'reject' }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setMessage("✅ Testimonial rejected successfully");
+        fetchTestimonials(); // Refresh list
+      } else {
+        setMessage(`❌ Error: ${result.error}`);
+      }
+    } catch (error) {
+      setMessage("❌ Failed to reject testimonial");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const handleDelete = async (id: string, name: string) => {
     setDeleteDialog({
       isOpen: true,
