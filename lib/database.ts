@@ -60,11 +60,13 @@ async function initializeDatabase() {
   console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
   console.log('PRISMA_DATABASE_URL exists:', !!process.env.PRISMA_DATABASE_URL);
   
+  // Try to get Postgres URL from multiple sources
+  const postgresUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL;
+  
   // Force Postgres in production when URL is available
-  if (process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL) {
+  if (postgresUrl) {
     // Use Vercel Postgres in production
     console.log('Using Vercel Postgres in production');
-    const postgresUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL || '';
     console.log('Postgres URL length:', postgresUrl.length);
     const pg = postgres(postgresUrl);
     
@@ -89,7 +91,7 @@ async function initializeDatabase() {
     };
   } else if (isProduction) {
     // Production fallback - use hardcoded Postgres URL temporarily
-    console.log('Using hardcoded Postgres URL for production');
+    console.log('Environment variables not found, using hardcoded Postgres URL for production');
     const hardcodedUrl = 'postgres://bd82f343dc43c9556f7f7ace190e1826bff588a76fde2a47d7608de83f09eebe:sk_xB_Pw2vksNUmq1ODbC3qM@db.prisma.io:5432/postgres?sslmode=require';
     const pg = postgres(hardcodedUrl);
     
