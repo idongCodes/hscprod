@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import ConfirmDialog from "./ConfirmDialog";
 
 interface Testimonial {
   id: string;
@@ -17,6 +18,15 @@ export default function TestimonialManagement() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [message, setMessage] = useState("");
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    testimonialId: string | null;
+    testimonialName: string;
+  }>({
+    isOpen: false,
+    testimonialId: null,
+    testimonialName: ""
+  });
 
   useEffect(() => {
     fetchTestimonials();
@@ -62,32 +72,43 @@ export default function TestimonialManagement() {
     }
   };
 
-  const handleReject = async (id: string) => {
-    setActionLoading(id);
+  const handleDelete = async (id: string, name: string) => {
+    setDeleteDialog({
+      isOpen: true,
+      testimonialId: id,
+      testimonialName: name
+    });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteDialog.testimonialId) return;
+    
+    setActionLoading(deleteDialog.testimonialId);
     setMessage("");
     
     try {
-      const response = await fetch('/api/admin/testimonials', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id, action: 'reject' }),
+      const response = await fetch(`/api/admin/testimonials?id=${deleteDialog.testimonialId}`, {
+        method: 'DELETE',
       });
       
       const result = await response.json();
       
       if (result.success) {
-        setMessage("✅ Testimonial rejected successfully");
+        setMessage("✅ Testimonial deleted successfully");
         fetchTestimonials(); // Refresh list
       } else {
         setMessage(`❌ Error: ${result.error}`);
       }
     } catch (error) {
-      setMessage("❌ Failed to reject testimonial");
+      setMessage("❌ Failed to delete testimonial");
     } finally {
       setActionLoading(null);
+      setDeleteDialog({ isOpen: false, testimonialId: null, testimonialName: "" });
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialog({ isOpen: false, testimonialId: null, testimonialName: "" });
   };
 
   const pendingTestimonials = testimonials.filter(t => t.is_approved === 0);
@@ -158,6 +179,14 @@ export default function TestimonialManagement() {
                     >
                       {actionLoading === testimonial.id ? '...' : 'Reject'}
                     </button>
+                    <button
+                      onClick={() => handleDelete(testimonial.id, testimonial.name)}
+                      disabled={actionLoading === testimonial.id}
+                      className="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Permanently delete"
+                    >
+                      {actionLoading === testimonial.id ? '...' : '🗑️'}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -198,19 +227,41 @@ export default function TestimonialManagement() {
                     Approved: {new Date(testimonial.updated_at).toLocaleDateString()}
                   </p>
                   
-                  <button
-                    onClick={() => handleReject(testimonial.id)}
-                    disabled={actionLoading === testimonial.id}
-                    className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {actionLoading === testimonial.id ? '...' : 'Reject'}
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleReject(testimonial.id)}
+                      disabled={actionLoading === testimonial.id}
+                      className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {actionLoading === testimonial.id ? '...' : 'Reject'}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(testimonial.id, testimonial.name)}
+                      disabled={actionLoading === testimonial.id}
+                      className="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Permanently delete"
+                    >
+                      {actionLoading === testimonial.id ? '...' : '🗑️'}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+      
+      {/* Custom Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        title="Delete Testimonial"
+        message={`Are you sure you want to permanently delete the testimonial from "${deleteDialog.testimonialName}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        type="danger"
+      />
     </div>
   );
 }
