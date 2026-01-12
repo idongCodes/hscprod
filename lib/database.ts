@@ -48,35 +48,43 @@ export interface ContactSubmission {
 const isProduction = process.env.NODE_ENV === 'production';
 
 let db: any;
+let dbInitialized = false;
 
-if (isProduction && process.env.POSTGRES_URL) {
-  // Use Vercel Postgres in production
-  console.log('Using Vercel Postgres in production');
-  const pg = postgres(process.env.POSTGRES_URL);
+async function initializeDatabase() {
+  if (dbInitialized) return db;
   
-  // Initialize Postgres tables if needed
-  await initializePostgresDatabase(pg);
+  if (isProduction && process.env.POSTGRES_URL) {
+    // Use Vercel Postgres in production
+    console.log('Using Vercel Postgres in production');
+    const pg = postgres(process.env.POSTGRES_URL);
+    
+    // Initialize Postgres tables if needed
+    await initializePostgresDatabase(pg);
+    
+    db = {
+      prepare: (query: string) => ({
+        all: async (...params: any[]) => {
+          const result = await pg.unsafe(query, ...params);
+          return result;
+        },
+        get: async (...params: any[]) => {
+          const result = await pg.unsafe(query, ...params);
+          return result[0];
+        },
+        run: async (...params: any[]) => {
+          await pg.unsafe(query, ...params);
+          return { changes: 1 };
+        }
+      })
+    };
+  } else {
+    // Use SQLite in development
+    console.log('Using SQLite in development');
+    db = sqliteDb;
+  }
   
-  db = {
-    prepare: (query: string) => ({
-      all: async (...params: any[]) => {
-        const result = await pg.unsafe(query, ...params);
-        return result;
-      },
-      get: async (...params: any[]) => {
-        const result = await pg.unsafe(query, ...params);
-        return result[0];
-      },
-      run: async (...params: any[]) => {
-        await pg.unsafe(query, ...params);
-        return { changes: 1 };
-      }
-    })
-  };
-} else {
-  // Use SQLite in development
-  console.log('Using SQLite in development');
-  db = sqliteDb;
+  dbInitialized = true;
+  return db;
 }
 
 async function initializePostgresDatabase(pg: any) {
@@ -95,7 +103,7 @@ async function initializePostgresDatabase(pg: any) {
     `);
 
     // Insert sample data if table is empty
-    const existing = await pg.unsafe('SELECT COUNT(*) as count FROM testimonials').toArray();
+    const existing = await pg.unsafe('SELECT COUNT(*) as count FROM testimonials');
     if (existing[0].count === 0) {
       await pg.unsafe(`
         INSERT INTO testimonials (id, name, title, message, is_approved) VALUES
@@ -114,13 +122,23 @@ async function initializePostgresDatabase(pg: any) {
   }
 }
 
+// Export a function that ensures database is initialized
+export async function getDatabase() {
+  return await initializeDatabase();
+}
+
+// Export db for backward compatibility (will be initialized on first use)
+export { db };
+
 // Audio tracks
 export async function getAudioTracks(): Promise<AudioTrack[]> {
+  const db = await getDatabase();
   const stmt = db.prepare('SELECT * FROM audio_tracks ORDER BY created_at DESC');
   return stmt.all() as AudioTrack[];
 }
 
 export async function createAudioTrack(track: Omit<AudioTrack, 'id' | 'created_at' | 'updated_at'>): Promise<AudioTrack> {
+  const db = await getDatabase();
   const id = Date.now().toString();
   const now = new Date().toISOString();
   
@@ -220,5 +238,3 @@ export async function createContactSubmission(submission: Omit<ContactSubmission
     updated_at: now
   };
 }
-
-export { db };
