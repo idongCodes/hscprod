@@ -77,6 +77,72 @@ async function initializeDatabase() {
         }
       })
     };
+  } else if (isProduction) {
+    // Production without Postgres - use in-memory storage with persistence
+    console.log('Using in-memory storage for production (Postgres not configured)');
+    
+    // Simple in-memory database for production
+    const memoryStore: { [key: string]: any } = {};
+    
+    // Initialize with sample data
+    if (!memoryStore.testimonials) {
+      memoryStore.testimonials = [
+        { id: '1', name: 'Yung Fader', title: 'Producer', message: 'The drum kits are absolutely lethal. Cleanest 808s I\'ve ever used in a production. HSC really knows how to mix the low end.', is_approved: 1, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '2', name: 'Melody Queen', title: 'R&B Artist', message: 'HSC created a custom beat that fit my voice perfectly. The vibe in the studio is unmatched—he gets the best performance out of you.', is_approved: 1, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '3', name: 'Da Architect', title: 'Sound Engineer', message: 'Mixing these stems was a breeze. High quality recording and professional organization makes my life so much easier.', is_approved: 1, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '4', name: 'Spitfire', title: 'Rapper', message: 'Bought a lease, recorded the track, and it\'s already doing numbers on Spotify. HSC production value is industry standard.', is_approved: 1, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '5', name: 'Neon Keys', title: 'Producer', message: 'Collab was smooth. We sent files back and forth and made a banger in 48 hours. Looking forward to the next project.', is_approved: 1, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '6', name: 'Vocalz Only', title: 'Artist', message: 'Finally found a producer who actually listens to the vision instead of just forcing their own style. 10/10 recommend.', is_approved: 1, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+      ];
+    }
+    
+    db = {
+      prepare: (query: string) => ({
+        all: async (...params: any[]) => {
+          if (query.includes('SELECT * FROM testimonials')) {
+            return memoryStore.testimonials || [];
+          }
+          return [];
+        },
+        get: async (...params: any[]) => {
+          if (query.includes('SELECT id FROM testimonials WHERE id = ?')) {
+            return memoryStore.testimonials?.find((t: any) => t.id === params[0]) || null;
+          }
+          return null;
+        },
+        run: async (...params: any[]) => {
+          if (query.includes('INSERT INTO testimonials')) {
+            const newTestimonial = {
+              id: params[0],
+              name: params[1],
+              title: params[2],
+              message: params[3],
+              is_approved: 0,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            };
+            memoryStore.testimonials = [...(memoryStore.testimonials || []), newTestimonial];
+            return { changes: 1 };
+          }
+          if (query.includes('UPDATE testimonials SET is_approved')) {
+            const id = params[1];
+            const isApproved = params[0];
+            const testimonial = memoryStore.testimonials?.find((t: any) => t.id === id);
+            if (testimonial) {
+              testimonial.is_approved = isApproved;
+              testimonial.updated_at = new Date().toISOString();
+            }
+            return { changes: 1 };
+          }
+          if (query.includes('DELETE FROM testimonials WHERE id = ?')) {
+            const id = params[0];
+            memoryStore.testimonials = memoryStore.testimonials?.filter((t: any) => t.id !== id) || [];
+            return { changes: 1 };
+          }
+          return { changes: 0 };
+        }
+      })
+    };
   } else {
     // Use SQLite in development
     console.log('Using SQLite in development');
