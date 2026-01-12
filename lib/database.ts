@@ -53,10 +53,12 @@ let dbInitialized = false;
 async function initializeDatabase() {
   if (dbInitialized) return db;
   
-  if (process.env.POSTGRES_URL) {
+  // Force Postgres in production when URL is available
+  if (process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL) {
     // Use Vercel Postgres in production
     console.log('Using Vercel Postgres in production');
-    const pg = postgres(process.env.POSTGRES_URL);
+    const postgresUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL || '';
+    const pg = postgres(postgresUrl);
     
     // Initialize Postgres tables if needed
     await initializePostgresDatabase(pg);
