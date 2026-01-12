@@ -132,20 +132,17 @@ export default function Testimonials() {
 
           {/* Grid of Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {reviews.map((review, i) => (
+            {reviews.filter(review => review && review.name && review.title && review.message).map((review, i) => (
                 <div key={i} className="bg-white/5 border border-white/10 p-8 rounded-2xl hover:bg-white/10 transition-colors shadow-lg">
-                    {/* User Header */}
                     <div className="flex items-center gap-4 mb-6">
-                        {/* Avatar Circle */}
                         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-purple-900 flex items-center justify-center text-white font-bold text-xl shadow-inner">
-                            {review.name[0]}
+                            {review.name?.[0] || '?'}
                         </div>
                         <div>
                             <h3 className="text-white font-bold text-lg">{review.name}</h3>
                             <p className="text-purple-400 text-xs uppercase tracking-wider font-bold">{review.title}</p>
                         </div>
                     </div>
-                    {/* Blurb */}
                     <p className="text-gray-300 italic leading-relaxed">&ldquo;{review.message}&rdquo;</p>
                 </div>
             ))}
