@@ -1,41 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const manualTestimonials: any[] = [
-  {
-    id: '1',
-    name: 'Yung Fader',
-    title: 'Producer',
-    message: 'The drum kits are absolutely lethal. Cleanest 808s I\'ve ever used in a production. HSC really knows how to mix the low end.',
-    is_approved: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    source: 'manual'
-  },
-  {
-    id: '2',
-    name: 'Melody Queen',
-    title: 'R&B Artist',
-    message: 'HSC created a custom beat that fit my voice perfectly. The vibe in the studio is unmatched—he gets the best performance out of you.',
-    is_approved: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    source: 'manual'
-  },
-  {
-    id: '3',
-    name: 'Da Architect',
-    title: 'Sound Engineer',
-    message: 'Mixing these stems was a breeze. High quality recording and professional organization makes my life so much easier.',
-    is_approved: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    source: 'manual'
-  }
-];
+import { testimonials } from '@/lib/testimonials';
 
 export async function GET() {
   try {
-    return NextResponse.json(manualTestimonials);
+    // Return only approved testimonials for public display
+    const approvedTestimonials = testimonials.filter(t => t.is_approved === true);
+    return NextResponse.json(approvedTestimonials);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
     return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
@@ -61,6 +31,11 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString(),
       source: 'pending'
     };
+    
+    // Add to shared storage
+    testimonials.unshift(newTestimonial);
+    
+    console.log('New testimonial submitted:', newTestimonial);
     
     return NextResponse.json({ 
       success: true, 

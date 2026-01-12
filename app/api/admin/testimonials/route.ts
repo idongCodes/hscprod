@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const adminTestimonials: any[] = [];
+import { testimonials } from '@/lib/testimonials';
 
 export async function GET() {
   try {
-    return NextResponse.json(adminTestimonials);
+    return NextResponse.json(testimonials);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
     return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
@@ -20,7 +19,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
     
-    const testimonial = adminTestimonials.find(t => t.id === id);
+    const testimonial = testimonials.find(t => t.id === id);
     
     if (!testimonial) {
       return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
@@ -49,13 +48,13 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Testimonial ID is required' }, { status: 400 });
     }
     
-    const index = adminTestimonials.findIndex(t => t.id === id);
+    const index = testimonials.findIndex(t => t.id === id);
     
     if (index === -1) {
       return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
     }
     
-    adminTestimonials.splice(index, 1);
+    testimonials.splice(index, 1);
     
     return NextResponse.json({ 
       success: true, 
