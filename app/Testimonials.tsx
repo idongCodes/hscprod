@@ -1,7 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Testimonial } from "@/lib/database";
+
+interface Testimonial {
+  id: string;
+  name: string;
+  title: string;
+  message: string;
+  is_approved: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
 export default function Testimonials() {
   const [reviews, setReviews] = useState<Testimonial[]>([]);
@@ -117,7 +126,7 @@ export default function Testimonials() {
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Street Cred</h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
-              Real feedback from the artists and producers creating waves with HSC sounds.
+              Real feedback from artists and producers creating waves with HSC sounds.
             </p>
           </div>
 

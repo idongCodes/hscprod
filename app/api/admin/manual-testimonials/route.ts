@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const manualTestimonials: any[] = [
+// Persistent storage for manual testimonials
+let manualTestimonials: any[] = [
   {
     id: '1',
     name: 'Yung Fader',
@@ -33,42 +34,40 @@ const manualTestimonials: any[] = [
   }
 ];
 
+// Get all manual testimonials (including non-approved ones for admin)
 export async function GET() {
   try {
     return NextResponse.json(manualTestimonials);
   } catch (error) {
-    console.error('Error fetching testimonials:', error);
-    return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
+    console.error('Error fetching manual testimonials:', error);
+    return NextResponse.json({ error: 'Failed to fetch manual testimonials' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, title, message } = await request.json();
+    const testimonial = await request.json();
     
-    if (!name || !title || !message) {
-      return NextResponse.json({ error: 'Name, title, and message are required' }, { status: 400 });
+    if (!testimonial) {
+      return NextResponse.json({ error: 'Testimonial data is required' }, { status: 400 });
     }
     
-    const id = Date.now().toString();
     const newTestimonial = {
-      id,
-      name,
-      title,
-      message,
-      is_approved: false,
+      id: Date.now().toString(),
+      ...testimonial,
+      is_approved: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      source: 'pending'
+      source: 'manual'
     };
     
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Testimonial submitted successfully! It will appear on site once approved.',
-      testimonial: newTestimonial
-    });
+    // Add to persistent storage
+    manualTestimonials.push(newTestimonial);
+    
+    // Return the testimonial directly (not wrapped in success object)
+    return NextResponse.json(newTestimonial);
   } catch (error) {
-    console.error('Error submitting testimonial:', error);
-    return NextResponse.json({ error: 'Failed to submit testimonial' }, { status: 500 });
+    console.error('Error adding manual testimonial:', error);
+    return NextResponse.json({ error: 'Failed to add manual testimonial' }, { status: 500 });
   }
 }

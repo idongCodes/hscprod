@@ -11,6 +11,7 @@ interface Testimonial {
   is_approved: number;
   created_at: string;
   updated_at: string;
+  source?: string; // 'database' or 'manual'
 }
 
 export default function TestimonialManagement() {
@@ -34,9 +35,22 @@ export default function TestimonialManagement() {
 
   const fetchTestimonials = async () => {
     try {
-      const response = await fetch('/api/admin/testimonials');
-      const data = await response.json();
-      setTestimonials(data);
+      // Fetch both database and manual testimonials
+      const [dbResponse, manualResponse] = await Promise.all([
+        fetch('/api/admin/testimonials'),
+        fetch('/api/admin/manual-testimonials')
+      ]);
+      
+      const dbData = await dbResponse.json();
+      const manualData = await manualResponse.json();
+      
+      // Combine both datasets
+      const allTestimonials = [...(Array.isArray(dbData) ? dbData : []), ...(Array.isArray(manualData) ? manualData : [])];
+      
+      // Sort by created_at (newest first)
+      allTestimonials.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      
+      setTestimonials(allTestimonials);
     } catch (error) {
       setMessage("❌ Failed to load testimonials");
     } finally {
