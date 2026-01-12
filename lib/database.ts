@@ -88,6 +88,31 @@ async function initializeDatabase() {
       })
     };
   } else if (isProduction) {
+    // Production fallback - use hardcoded Postgres URL temporarily
+    console.log('Using hardcoded Postgres URL for production');
+    const hardcodedUrl = 'postgres://bd82f343dc43c9556f7f7ace190e1826bff588a76fde2a47d7608de83f09eebe:sk_xB_Pw2vksNUmq1ODbC3qM@db.prisma.io:5432/postgres?sslmode=require';
+    const pg = postgres(hardcodedUrl);
+    
+    // Initialize Postgres tables if needed
+    await initializePostgresDatabase(pg);
+    
+    db = {
+      prepare: (query: string) => ({
+        all: async (...params: any[]) => {
+          const result = await pg.unsafe(query, ...params);
+          return result;
+        },
+        get: async (...params: any[]) => {
+          const result = await pg.unsafe(query, ...params);
+          return result[0];
+        },
+        run: async (...params: any[]) => {
+          await pg.unsafe(query, ...params);
+          return { changes: 1 };
+        }
+      })
+    };
+  } else if (isProduction) {
     // Production without Postgres - use in-memory storage with persistence
     console.log('Using in-memory storage for production (Postgres not configured)');
     
