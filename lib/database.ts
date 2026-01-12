@@ -45,7 +45,7 @@ export interface ContactSubmission {
 }
 
 // Database adapter that works with both SQLite (dev) and Postgres (prod)
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === 'production' || !!process.env.POSTGRES_URL;
 
 let db: any;
 let dbInitialized = false;
@@ -53,7 +53,7 @@ let dbInitialized = false;
 async function initializeDatabase() {
   if (dbInitialized) return db;
   
-  if (isProduction && process.env.POSTGRES_URL) {
+  if (process.env.POSTGRES_URL) {
     // Use Vercel Postgres in production
     console.log('Using Vercel Postgres in production');
     const pg = postgres(process.env.POSTGRES_URL);
