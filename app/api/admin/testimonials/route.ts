@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { testimonials } from '@/lib/testimonials';
+import { getTestimonials, updateTestimonial, deleteTestimonial } from '@/lib/testimonial-storage';
 
 export async function GET() {
   try {
+    const testimonials = getTestimonials();
+    console.log('Admin API returning testimonials:', testimonials.length);
     return NextResponse.json(testimonials);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
@@ -19,13 +21,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
     
-    const testimonial = testimonials.find(t => t.id === id);
+    const isApproved = action === 'approve' ? 1 : 0;
+    const updated = updateTestimonial(id, { is_approved: isApproved });
     
-    if (!testimonial) {
+    if (!updated) {
       return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
     }
-    
-    testimonial.is_approved = action === 'approve' ? 1 : 0;
     
     return NextResponse.json({ 
       success: true, 
@@ -48,13 +49,11 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Testimonial ID is required' }, { status: 400 });
     }
     
-    const index = testimonials.findIndex(t => t.id === id);
+    const deleted = deleteTestimonial(id);
     
-    if (index === -1) {
+    if (!deleted) {
       return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
     }
-    
-    testimonials.splice(index, 1);
     
     return NextResponse.json({ 
       success: true, 

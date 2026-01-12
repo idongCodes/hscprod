@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { testimonials } from '@/lib/testimonials';
+import { getTestimonials, addTestimonial } from '@/lib/testimonial-storage';
 
 export async function GET() {
   try {
     // Return only approved testimonials for public display
-    const approvedTestimonials = testimonials.filter(t => t.is_approved === true);
+    const allTestimonials = getTestimonials();
+    const approvedTestimonials = allTestimonials.filter(t => t.is_approved === true);
     return NextResponse.json(approvedTestimonials);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
@@ -32,8 +33,8 @@ export async function POST(request: NextRequest) {
       source: 'pending'
     };
     
-    // Add to shared storage
-    testimonials.unshift(newTestimonial);
+    // Add to persistent storage
+    addTestimonial(newTestimonial);
     
     console.log('New testimonial submitted:', newTestimonial);
     
