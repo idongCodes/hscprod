@@ -41,3 +41,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to update testimonial' }, { status: 500 });
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    
+    if (!id) {
+      return NextResponse.json({ error: 'Testimonial ID is required' }, { status: 400 });
+    }
+    
+    const stmt = db.prepare('DELETE FROM testimonials WHERE id = ?');
+    const result = stmt.run(id);
+    
+    if (result.changes === 0) {
+      return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
+    }
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Testimonial deleted successfully',
+      id 
+    });
+  } catch (error) {
+    console.error('Error deleting testimonial:', error);
+    return NextResponse.json({ error: 'Failed to delete testimonial' }, { status: 500 });
+  }
+}
