@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/sqlite';
+import { db } from '@/lib/database';
 
 export async function GET() {
   try {
     // Get all testimonials (both approved and pending)
     const stmt = db.prepare('SELECT * FROM testimonials ORDER BY created_at DESC');
-    const testimonials = stmt.all();
+    const testimonials = await stmt.all();
     return NextResponse.json(testimonials);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     
     // Check if testimonial exists first
     const checkStmt = db.prepare('SELECT id FROM testimonials WHERE id = ?');
-    const existing = checkStmt.get(id);
+    const existing = await checkStmt.get(id);
     console.log('Existing testimonial:', existing);
     
     if (!existing) {
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
     
     const stmt = db.prepare('UPDATE testimonials SET is_approved = ?, updated_at = datetime(\'now\') WHERE id = ?');
-    const result = stmt.run(isApproved, id);
+    const result = await stmt.run(isApproved, id);
     console.log('Update result:', result);
     
     if (result.changes === 0) {
@@ -72,7 +72,7 @@ export async function DELETE(request: NextRequest) {
     }
     
     const stmt = db.prepare('DELETE FROM testimonials WHERE id = ?');
-    const result = stmt.run(id);
+    const result = await stmt.run(id);
     
     if (result.changes === 0) {
       return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });

@@ -1,5 +1,6 @@
-import { db } from './sqlite';
+import { db as sqliteDb } from './sqlite';
 import { sendTestimonialApprovalEmail } from './email';
+import postgres from 'postgres';
 
 export interface AudioTrack {
   id: string;
@@ -41,6 +42,76 @@ export interface ContactSubmission {
   status: 'new' | 'read' | 'responded';
   created_at: string;
   updated_at: string;
+}
+
+// Database adapter that works with both SQLite (dev) and Postgres (prod)
+const isProduction = process.env.NODE_ENV === 'production';
+
+let db: any;
+
+if (isProduction && process.env.POSTGRES_URL) {
+  // Use Vercel Postgres in production
+  console.log('Using Vercel Postgres in production');
+  const pg = postgres(process.env.POSTGRES_URL);
+  
+  // Initialize Postgres tables if needed
+  await initializePostgresDatabase(pg);
+  
+  db = {
+    prepare: (query: string) => ({
+      all: async (...params: any[]) => {
+        const result = await pg.unsafe(query, ...params);
+        return result;
+      },
+      get: async (...params: any[]) => {
+        const result = await pg.unsafe(query, ...params);
+        return result[0];
+      },
+      run: async (...params: any[]) => {
+        await pg.unsafe(query, ...params);
+        return { changes: 1 };
+      }
+    })
+  };
+} else {
+  // Use SQLite in development
+  console.log('Using SQLite in development');
+  db = sqliteDb;
+}
+
+async function initializePostgresDatabase(pg: any) {
+  try {
+    // Create testimonials table
+    await pg.unsafe(`
+      CREATE TABLE IF NOT EXISTS testimonials (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        title TEXT NOT NULL,
+        message TEXT NOT NULL,
+        is_approved INTEGER DEFAULT 0,
+        created_at TEXT DEFAULT NOW(),
+        updated_at TEXT DEFAULT NOW()
+      )
+    `);
+
+    // Insert sample data if table is empty
+    const existing = await pg.unsafe('SELECT COUNT(*) as count FROM testimonials').toArray();
+    if (existing[0].count === 0) {
+      await pg.unsafe(`
+        INSERT INTO testimonials (id, name, title, message, is_approved) VALUES
+        ('1', 'Yung Fader', 'Producer', 'The drum kits are absolutely lethal. Cleanest 808s I''ve ever used in a production. HSC really knows how to mix the low end.', 1),
+        ('2', 'Melody Queen', 'R&B Artist', 'HSC created a custom beat that fit my voice perfectly. The vibe in the studio is unmatched—he gets the best performance out of you.', 1),
+        ('3', 'Da Architect', 'Sound Engineer', 'Mixing these stems was a breeze. High quality recording and professional organization makes my life so much easier.', 1),
+        ('4', 'Spitfire', 'Rapper', 'Bought a lease, recorded the track, and it''s already doing numbers on Spotify. HSC production value is industry standard.', 1),
+        ('5', 'Neon Keys', 'Producer', 'Collab was smooth. We sent files back and forth and made a banger in 48 hours. Looking forward to the next project.', 1),
+        ('6', 'Vocalz Only', 'Artist', 'Finally found a producer who actually listens to the vision instead of just forcing their own style. 10/10 recommend.', 1)
+      `);
+    }
+    
+    console.log('Postgres database initialized successfully');
+  } catch (error) {
+    console.error('Error initializing Postgres database:', error);
+  }
 }
 
 // Audio tracks
@@ -149,3 +220,5 @@ export async function createContactSubmission(submission: Omit<ContactSubmission
     updated_at: now
   };
 }
+
+export { db };
