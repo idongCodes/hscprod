@@ -221,15 +221,18 @@ async function initializePostgresDatabase(pg: any) {
     // Insert sample data if table is empty
     const existing = await pg.unsafe('SELECT COUNT(*) as count FROM testimonials');
     if (existing[0].count === 0) {
-      await pg.unsafe(`
-        INSERT INTO testimonials (id, name, title, message, is_approved) VALUES
-        ('1', 'Yung Fader', 'Producer', 'The drum kits are absolutely lethal. Cleanest 808s I''ve ever used in a production. HSC really knows how to mix the low end.', 1),
-        ('2', 'Melody Queen', 'R&B Artist', 'HSC created a custom beat that fit my voice perfectly. The vibe in the studio is unmatched—he gets the best performance out of you.', 1),
-        ('3', 'Da Architect', 'Sound Engineer', 'Mixing these stems was a breeze. High quality recording and professional organization makes my life so much easier.', 1),
-        ('4', 'Spitfire', 'Rapper', 'Bought a lease, recorded the track, and it''s already doing numbers on Spotify. HSC production value is industry standard.', 1),
-        ('5', 'Neon Keys', 'Producer', 'Collab was smooth. We sent files back and forth and made a banger in 48 hours. Looking forward to the next project.', 1),
-        ('6', 'Vocalz Only', 'Artist', 'Finally found a producer who actually listens to the vision instead of just forcing their own style. 10/10 recommend.', 1)
-      `);
+      const sampleData = [
+        ['1', 'Yung Fader', 'Producer', 'The drum kits are absolutely lethal. Cleanest 808s I\'ve ever used in a production. HSC really knows how to mix the low end.', 1],
+        ['2', 'Melody Queen', 'R&B Artist', 'HSC created a custom beat that fit my voice perfectly. The vibe in the studio is unmatched—he gets the best performance out of you.', 1],
+        ['3', 'Da Architect', 'Sound Engineer', 'Mixing these stems was a breeze. High quality recording and professional organization makes my life so much easier.', 1],
+        ['4', 'Spitfire', 'Rapper', 'Bought a lease, recorded the track, and it\'s already doing numbers on Spotify. HSC production value is industry standard.', 1],
+        ['5', 'Neon Keys', 'Producer', 'Collab was smooth. We sent files back and forth and made a banger in 48 hours. Looking forward to the next project.', 1],
+        ['6', 'Vocalz Only', 'Artist', 'Finally found a producer who actually listens to the vision instead of just forcing their own style. 10/10 recommend.', 1]
+      ];
+      
+      for (const [id, name, title, message, is_approved] of sampleData) {
+        await pg.unsafe('INSERT INTO testimonials (id, name, title, message, is_approved) VALUES ($1, $2, $3, $4, $5)', [id, name, title, message, is_approved]);
+      }
     }
     
     console.log('Postgres database initialized successfully');
