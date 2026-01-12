@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/sqlite';
+import { getDatabase } from '@/lib/database';
 
 export async function POST(request: NextRequest) {
   try {
+    const db = await getDatabase();
     const body = await request.json();
     const { name, title, message } = body;
 
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `);
     
-    stmt.run(id, name, title, message, 0, now, now);
+    await stmt.run(id, name, title, message, 0, now, now);
     
     const newTestimonial = {
       id,
