@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { getApprovedTestimonials } from '@/lib/database';
+import { db } from '@/lib/sqlite';
 
 export async function GET() {
   try {
-    const testimonials = await getApprovedTestimonials();
+    const stmt = db.prepare('SELECT * FROM testimonials WHERE is_approved = 1 ORDER BY created_at DESC');
+    const testimonials = stmt.all();
     return NextResponse.json(testimonials);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
