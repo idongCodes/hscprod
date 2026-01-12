@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/sqlite';
+import { db } from '@/lib/database';
 import { sendTestimonialApprovalEmail, TestimonialData } from '@/lib/email';
 
 export async function GET() {
   try {
     const stmt = db.prepare('SELECT * FROM testimonials WHERE is_approved = 1 ORDER BY created_at DESC');
-    const testimonials = stmt.all();
+    const testimonials = await stmt.all();
     return NextResponse.json(testimonials);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
@@ -30,10 +30,10 @@ export async function POST(request: NextRequest) {
       VALUES (?, ?, ?, ?, 0)
     `);
     
-    stmt.run(id, name, title, message);
+    await stmt.run(id, name, title, message);
     
     // Get the inserted testimonial for email
-    const testimonial = db.prepare('SELECT * FROM testimonials WHERE id = ?').get(id);
+    const testimonial = await db.prepare('SELECT * FROM testimonials WHERE id = ?').get(id);
     
     // Send email notification
     try {
