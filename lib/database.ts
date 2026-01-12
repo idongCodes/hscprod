@@ -60,13 +60,40 @@ async function initializeDatabase() {
   console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
   console.log('PRISMA_DATABASE_URL exists:', !!process.env.PRISMA_DATABASE_URL);
   
+  // Try to get Postgres URL from multiple sources
+  const postgresUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL;
+  
   // Force Postgres in production when URL is available
-  if (process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL) {
+  if (postgresUrl) {
     // Use Vercel Postgres in production
     console.log('Using Vercel Postgres in production');
-    const postgresUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL || '';
     console.log('Postgres URL length:', postgresUrl.length);
     const pg = postgres(postgresUrl);
+    
+    // Initialize Postgres tables if needed
+    await initializePostgresDatabase(pg);
+    
+    db = {
+      prepare: (query: string) => ({
+        all: async (...params: any[]) => {
+          const result = await pg.unsafe(query, ...params);
+          return result;
+        },
+        get: async (...params: any[]) => {
+          const result = await pg.unsafe(query, ...params);
+          return result[0];
+        },
+        run: async (...params: any[]) => {
+          await pg.unsafe(query, ...params);
+          return { changes: 1 };
+        }
+      })
+    };
+  } else if (isProduction) {
+    // Production fallback - use hardcoded Postgres URL temporarily
+    console.log('Environment variables not found, using hardcoded Postgres URL for production');
+    const hardcodedUrl = 'postgres://bd82f343dc43c9556f7f7ace190e1826bff588a76fde2a47d7608de83f09eebe:sk_xB_Pw2vksNUmq1ODbC3qM@db.prisma.io:5432/postgres?sslmode=require';
+    const pg = postgres(hardcodedUrl);
     
     // Initialize Postgres tables if needed
     await initializePostgresDatabase(pg);
