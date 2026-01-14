@@ -1,12 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getGlobalTestimonials, addGlobalTestimonial } from '@/lib/global-testimonials';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function GET() {
   try {
-    // Return only approved testimonials for public display
-    const allTestimonials = getGlobalTestimonials();
-    const approvedTestimonials = allTestimonials.filter(t => t.is_approved === true);
-    return NextResponse.json(approvedTestimonials);
+    // Get only approved testimonials for public display
+    const { data, error } = await supabaseAdmin
+      .from('testimonials')
+      .select('*')
+      .eq('is_approved', true)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching testimonials:', error);
+      return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
+    }
+
+    return NextResponse.json(data || []);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
     return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
@@ -21,27 +30,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Name, title, and message are required' }, { status: 400 });
     }
     
-    const id = Date.now().toString();
-    const newTestimonial = {
-      id,
-      name,
-      title,
-      message,
-      is_approved: false,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      source: 'pending'
-    };
+    const { data, error } = await supabaseAdmin
+      .from('testimonials')
+      .insert({
+        name,
+        title,
+        message,
+        is_approved: false,
+        source: 'user'
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error submitting testimonial:', error);
+      return NextResponse.json({ error: 'Failed to submit testimonial' }, { status: 500 });
+    }
     
-    // Add to global storage
-    addGlobalTestimonial(newTestimonial);
-    
-    console.log('New testimonial submitted:', newTestimonial);
+    console.log('New testimonial submitted:', data);
     
     return NextResponse.json({ 
       success: true, 
       message: 'Testimonial submitted successfully! It will appear on site once approved.',
-      testimonial: newTestimonial
+      testimonial: data
     });
   } catch (error) {
     console.error('Error submitting testimonial:', error);

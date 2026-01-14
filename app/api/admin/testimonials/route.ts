@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getGlobalTestimonials, updateGlobalTestimonial, deleteGlobalTestimonial } from '@/lib/global-testimonials';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function GET() {
   try {
-    const testimonials = getGlobalTestimonials();
-    console.log('Admin API returning testimonials:', testimonials.length);
-    return NextResponse.json(testimonials);
+    const { data, error } = await supabaseAdmin
+      .from('testimonials')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching testimonials:', error);
+      return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
+    }
+
+    return NextResponse.json(data || []);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
     return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
@@ -21,10 +29,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
     
-    const isApproved = action === 'approve' ? 1 : 0;
-    const updated = updateGlobalTestimonial(id, { is_approved: isApproved });
+    const isApproved = action === 'approve';
     
-    if (!updated) {
+    const { data, error } = await supabaseAdmin
+      .from('testimonials')
+      .update({ is_approved: isApproved })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating testimonial:', error);
+      return NextResponse.json({ error: 'Failed to update testimonial' }, { status: 500 });
+    }
+    
+    if (!data) {
       return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
     }
     
@@ -49,9 +68,19 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Testimonial ID is required' }, { status: 400 });
     }
     
-    const deleted = deleteGlobalTestimonial(id);
+    const { data, error } = await supabaseAdmin
+      .from('testimonials')
+      .delete()
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error deleting testimonial:', error);
+      return NextResponse.json({ error: 'Failed to delete testimonial' }, { status: 500 });
+    }
     
-    if (!deleted) {
+    if (!data) {
       return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
     }
     
