@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resendApiKey = process.env.RESEND_API_KEY;
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 export async function sendTestimonialNotificationEmail(
   testimonial: {
@@ -10,6 +11,11 @@ export async function sendTestimonialNotificationEmail(
     created_at: string;
   }
 ) {
+  if (!resend) {
+    console.log('Email skipped - Resend not configured');
+    return { success: false, error: 'Resend not configured' };
+  }
+
   try {
     const { data, error } = await resend.emails.send({
       from: 'noreply@hscprod.com',
@@ -56,6 +62,11 @@ export async function sendTestimonialNotificationEmail(
 }
 
 export async function sendFeatureUpdateEmail() {
+  if (!resend) {
+    console.log('Email skipped - Resend not configured');
+    return { success: false, error: 'Resend not configured' };
+  }
+
   try {
     const { data, error } = await resend.emails.send({
       from: 'noreply@hscprod.com',
@@ -129,6 +140,11 @@ export async function sendFeatureUpdateEmail() {
 
 // Quick test function
 export async function sendTestEmail() {
+  if (!resend) {
+    console.log('Email skipped - Resend not configured');
+    return { success: false, error: 'Resend not configured' };
+  }
+
   try {
     const { data, error } = await resend.emails.send({
       from: 'noreply@hscprod.com',

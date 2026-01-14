@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'fallback-key'
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'fallback-service-key'
 
 // Check if we should use Prisma instead of Supabase
 const usePrisma = process.env.USE_PRISMA_INSTEAD_OF_SUPABASE === 'true'
