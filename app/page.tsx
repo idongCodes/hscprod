@@ -5,6 +5,7 @@ import Testimonials from "./Testimonials";
 import TestimonialForm from "./TestimonialForm";
 import FadeIn from "./FadeIn";
 import Benefits from "./Benefits";
+import ServicesPricing from "./ServicesPricing";
 
 export default function Home() {
   return (
@@ -49,6 +50,10 @@ export default function Home() {
 
       <FadeIn delay={0.2}>
         <Benefits />
+      </FadeIn>
+
+      <FadeIn delay={0.2}>
+        <ServicesPricing />
       </FadeIn>
 
       <FadeIn delay={0.2}>
