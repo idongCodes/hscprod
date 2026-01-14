@@ -53,14 +53,14 @@ export default function Home() {
       </FadeIn>
 
       <FadeIn delay={0.2}>
+        <ServicesPricing />
+      </FadeIn>
+
+      <FadeIn delay={0.2}>
         <Testimonials />
       </FadeIn>
 
       <TestimonialForm />
-
-      <FadeIn delay={0.2}>
-        <ServicesPricing />
-      </FadeIn>
 
       <section className="relative py-24 px-4 border-t border-white/10">
         <div className="relative z-10">
