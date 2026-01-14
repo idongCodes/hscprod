@@ -22,12 +22,14 @@ export default function Media() {
   useEffect(() => {
     const loadTracks = async () => {
       try {
-        const response = await fetch('/api/tracks');
+        const response = await fetch('/api/tracks-auto');
         if (!response.ok) throw new Error('Failed to fetch tracks');
         const audioTracks = await response.json();
         setTracks(audioTracks);
+        console.log('Loaded tracks from auto-scanned files:', audioTracks);
       } catch (error) {
         console.error('Error loading tracks:', error);
+        // Fallback to hardcoded tracks if auto-scan fails
         setTracks([
           { id: "1", title: "Brooklyn Nights", genre: "NY Drill", duration: "2:45", price: 29.99, audio_url: "/audio/drill1.mp3", created_at: "", updated_at: "" },
           { id: "2", title: "Ops Outside", genre: "NY Drill", duration: "3:10", price: 29.99, audio_url: "/audio/drill2.mp3", created_at: "", updated_at: "" },
