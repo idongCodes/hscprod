@@ -8,9 +8,14 @@ import {
 
 export async function GET() {
   try {
+    console.log('Admin testimonials API called, usePrisma:', usePrisma);
+    
     if (usePrisma) {
       // Use production storage
       const testimonials = getProductionTestimonials();
+      console.log('Admin API returning testimonials:', testimonials.length, 'total');
+      console.log('Pending testimonials:', testimonials.filter(t => t.is_approved === false).length);
+      console.log('Approved testimonials:', testimonials.filter(t => t.is_approved === true).length);
       return NextResponse.json(testimonials);
     }
 

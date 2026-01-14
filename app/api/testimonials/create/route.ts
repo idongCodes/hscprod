@@ -5,8 +5,12 @@ import { addProductionTestimonial, getPendingProductionTestimonials } from '@/li
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('Create testimonials API called, usePrisma:', usePrisma);
+    
     const body = await request.json();
     const { name, title, message } = body;
+    
+    console.log('Testimonial data received:', { name, title, message });
 
     if (!name || !title || !message) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -14,6 +18,7 @@ export async function POST(request: NextRequest) {
 
     if (usePrisma) {
       // Use production storage
+      console.log('Using production storage for new testimonial');
       const testimonial = addProductionTestimonial({
         name,
         title,

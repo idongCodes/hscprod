@@ -19,7 +19,10 @@ declare global {
 
 // Initialize production testimonials with default data
 export function getProductionTestimonials(): Testimonial[] {
+  console.log('getProductionTestimonials called, current storage:', global.productionTestimonials);
+  
   if (!global.productionTestimonials) {
+    console.log('Initializing production testimonials with default data');
     global.productionTestimonials = [
       {
         id: "1",
@@ -53,6 +56,7 @@ export function getProductionTestimonials(): Testimonial[] {
       }
     ];
   }
+  console.log('Returning testimonials:', global.productionTestimonials.length, 'total');
   return global.productionTestimonials;
 }
 
