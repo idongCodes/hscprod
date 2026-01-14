@@ -13,7 +13,7 @@ interface AudioTrack {
   updated_at: string;
 }
 
-// Function to scan audio files from public folder
+// Function to scan audio files from public folder (supports MP3, WAV, FLAC)
 async function scanAudioFiles(): Promise<AudioTrack[]> {
   try {
     const publicPath = path.join(process.cwd(), 'public', 'audio');
@@ -26,7 +26,7 @@ async function scanAudioFiles(): Promise<AudioTrack[]> {
     // Scan beats folder
     if (fs.existsSync(beatsPath)) {
       const beatFiles = fs.readdirSync(beatsPath).filter(file => 
-        file.endsWith('.mp3') || file.endsWith('.wav')
+        file.endsWith('.mp3') || file.endsWith('.wav') || file.endsWith('.flac')
       );
       
       beatFiles.forEach((file, index) => {
@@ -48,7 +48,7 @@ async function scanAudioFiles(): Promise<AudioTrack[]> {
     // Scan songs folder
     if (fs.existsSync(songsPath)) {
       const songFiles = fs.readdirSync(songsPath).filter(file => 
-        file.endsWith('.mp3') || file.endsWith('.wav')
+        file.endsWith('.mp3') || file.endsWith('.wav') || file.endsWith('.flac')
       );
       
       songFiles.forEach((file, index) => {
