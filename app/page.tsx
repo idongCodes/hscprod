@@ -5,6 +5,7 @@ import Testimonials from "./Testimonials";
 import TestimonialForm from "./TestimonialForm";
 import FadeIn from "./FadeIn";
 import Benefits from "./Benefits";
+import ServicesPricing from "./ServicesPricing";
 
 export default function Home() {
   return (
@@ -56,6 +57,10 @@ export default function Home() {
       </FadeIn>
 
       <TestimonialForm />
+
+      <FadeIn delay={0.2}>
+        <ServicesPricing />
+      </FadeIn>
 
       <section className="relative py-24 px-4 border-t border-white/10">
         <div className="relative z-10">
