@@ -50,14 +50,14 @@ export default function Benefits() {
         </div>
 
         {/* Benefits Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
           {benefits.map((item, index) => (
-            <div key={index} className="text-center group p-6 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
-              <div className="w-16 h-16 bg-purple-900/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+            <div key={index} className="text-center group p-8 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
+              <div className="w-20 h-20 bg-purple-900/20 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300">
                 {item.icon}
               </div>
-              <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
+              <h3 className="text-2xl font-bold text-white mb-4">{item.title}</h3>
+              <p className="text-gray-400 text-base leading-relaxed">
                 {item.description}
               </p>
             </div>
