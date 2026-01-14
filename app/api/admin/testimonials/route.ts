@@ -1,43 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, usePrisma } from '@/lib/supabase';
+import { 
+  getProductionTestimonials, 
+  updateProductionTestimonial, 
+  deleteProductionTestimonial 
+} from '@/lib/production-storage';
 
 export async function GET() {
   try {
     if (usePrisma) {
-      // Fallback to Prisma for production
-      const testimonials = [
-        {
-          id: "1",
-          name: "Yung Fader",
-          title: "Producer",
-          message: "The drum kits are absolutely lethal. Cleanest 808s I've ever used in a production. HSC really knows how to mix the low end.",
-          is_approved: true,
-          source: 'manual',
-          created_at: "2024-01-01T00:00:00Z",
-          updated_at: "2024-01-01T00:00:00Z"
-        },
-        {
-          id: "2",
-          name: "Melody Queen",
-          title: "R&B Artist",
-          message: "HSC created a custom beat that fit my voice perfectly. The vibe in the studio is unmatched—he gets the best performance out of you.",
-          is_approved: true,
-          source: 'manual',
-          created_at: "2024-01-01T00:00:00Z",
-          updated_at: "2024-01-01T00:00:00Z"
-        },
-        {
-          id: "3",
-          name: "Da Architect",
-          title: "Sound Engineer",
-          message: "Mixing these stems was a breeze. High quality recording and professional organization makes my life so much easier.",
-          is_approved: true,
-          source: 'manual',
-          created_at: "2024-01-01T00:00:00Z",
-          updated_at: "2024-01-01T00:00:00Z"
-        }
-      ];
-      
+      // Use production storage
+      const testimonials = getProductionTestimonials();
       return NextResponse.json(testimonials);
     }
 
@@ -70,7 +43,13 @@ export async function POST(request: NextRequest) {
     const isApproved = action === 'approve';
     
     if (usePrisma) {
-      // Fallback for production - return success but don't update
+      // Use production storage
+      const updated = updateProductionTestimonial(id, { is_approved: isApproved });
+      
+      if (!updated) {
+        return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
+      }
+      
       return NextResponse.json({ 
         success: true, 
         message: `Testimonial ${action}d successfully`,
@@ -117,7 +96,13 @@ export async function DELETE(request: NextRequest) {
     }
     
     if (usePrisma) {
-      // Fallback for production - return success but don't delete
+      // Use production storage
+      const deleted = deleteProductionTestimonial(id);
+      
+      if (!deleted) {
+        return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
+      }
+      
       return NextResponse.json({ 
         success: true, 
         message: 'Testimonial deleted successfully',
