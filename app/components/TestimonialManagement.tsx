@@ -8,7 +8,7 @@ interface Testimonial {
   name: string;
   title: string;
   message: string;
-  is_approved: number;
+  is_approved: boolean;
   created_at: string;
   updated_at: string;
   source?: string; // 'database' or 'manual'
@@ -35,22 +35,11 @@ export default function TestimonialManagement() {
 
   const fetchTestimonials = async () => {
     try {
-      // Fetch both database and manual testimonials
-      const [dbResponse, manualResponse] = await Promise.all([
-        fetch('/api/admin/testimonials'),
-        fetch('/api/admin/manual-testimonials')
-      ]);
+      // Fetch testimonials from Supabase
+      const response = await fetch('/api/admin/testimonials');
+      const data = await response.json();
       
-      const dbData = await dbResponse.json();
-      const manualData = await manualResponse.json();
-      
-      // Combine both datasets
-      const allTestimonials = [...(Array.isArray(dbData) ? dbData : []), ...(Array.isArray(manualData) ? manualData : [])];
-      
-      // Sort by created_at (newest first)
-      allTestimonials.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-      
-      setTestimonials(allTestimonials);
+      setTestimonials(Array.isArray(data) ? data : []);
     } catch (error) {
       setMessage("❌ Failed to load testimonials");
     } finally {
@@ -167,8 +156,8 @@ export default function TestimonialManagement() {
     setDeleteDialog({ isOpen: false, testimonialId: null, testimonialName: "" });
   };
 
-  const pendingTestimonials = testimonials.filter(t => t.is_approved === 0);
-  const approvedTestimonials = testimonials.filter(t => t.is_approved === 1);
+  const pendingTestimonials = testimonials.filter(t => t.is_approved === false);
+  const approvedTestimonials = testimonials.filter(t => t.is_approved === true);
 
   if (loading) {
     return (

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-// Simple in-memory storage for new testimonials
-const pendingTestimonials: any[] = [];
+import { supabaseAdmin } from '@/lib/supabase';
+import { sendTestimonialNotificationEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,29 +11,38 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const id = Date.now().toString();
-    const now = new Date().toISOString();
+    const { data, error } = await supabaseAdmin
+      .from('testimonials')
+      .insert({
+        name,
+        title,
+        message,
+        is_approved: false,
+        source: 'user'
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating testimonial:', error);
+      return NextResponse.json({ error: 'Failed to create testimonial' }, { status: 500 });
+    }
     
-    const newTestimonial = {
-      id,
-      name,
-      title,
-      message,
-      is_approved: false,
-      created_at: now,
-      updated_at: now,
-      source: 'pending'
-    };
+    console.log('New testimonial submitted:', data);
     
-    // Store in memory (you'll get email notification to manually approve)
-    pendingTestimonials.push(newTestimonial);
-    
-    console.log('New testimonial submitted:', newTestimonial);
+    // Send email notification (non-blocking)
+    if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 'your_resend_api_key_here') {
+      sendTestimonialNotificationEmail(data).catch(emailError => {
+        console.error('Email notification failed:', emailError);
+      });
+    } else {
+      console.log('Email notification skipped - RESEND_API_KEY not configured');
+    }
     
     return NextResponse.json({ 
       success: true, 
       message: 'Testimonial submitted successfully! It will be reviewed and added shortly.',
-      testimonial: newTestimonial
+      testimonial: data
     });
   } catch (error) {
     console.error('Error creating testimonial:', error);
@@ -42,10 +50,21 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Admin endpoint to get pending testimonials
+// Admin endpoint to get pending testimonials (no longer needed since we have unified API)
 export async function GET() {
   try {
-    return NextResponse.json(pendingTestimonials);
+    const { data, error } = await supabaseAdmin
+      .from('testimonials')
+      .select('*')
+      .eq('is_approved', false)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching pending testimonials:', error);
+      return NextResponse.json({ error: 'Failed to fetch pending testimonials' }, { status: 500 });
+    }
+
+    return NextResponse.json(data || []);
   } catch (error) {
     console.error('Error fetching pending testimonials:', error);
     return NextResponse.json({ error: 'Failed to fetch pending testimonials' }, { status: 500 });

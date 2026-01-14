@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const adminTestimonials: any[] = [];
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function GET() {
   try {
-    return NextResponse.json(adminTestimonials);
+    const { data, error } = await supabaseAdmin
+      .from('testimonials')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching testimonials:', error);
+      return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
+    }
+
+    return NextResponse.json(data || []);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
     return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
@@ -20,13 +29,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
     
-    const testimonial = adminTestimonials.find(t => t.id === id);
+    const isApproved = action === 'approve';
     
-    if (!testimonial) {
-      return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
+    const { data, error } = await supabaseAdmin
+      .from('testimonials')
+      .update({ is_approved: isApproved })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating testimonial:', error);
+      return NextResponse.json({ error: 'Failed to update testimonial' }, { status: 500 });
     }
     
-    testimonial.is_approved = action === 'approve' ? 1 : 0;
+    if (!data) {
+      return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
+    }
     
     return NextResponse.json({ 
       success: true, 
@@ -49,13 +68,21 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Testimonial ID is required' }, { status: 400 });
     }
     
-    const index = adminTestimonials.findIndex(t => t.id === id);
-    
-    if (index === -1) {
-      return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
+    const { data, error } = await supabaseAdmin
+      .from('testimonials')
+      .delete()
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error deleting testimonial:', error);
+      return NextResponse.json({ error: 'Failed to delete testimonial' }, { status: 500 });
     }
     
-    adminTestimonials.splice(index, 1);
+    if (!data) {
+      return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
+    }
     
     return NextResponse.json({ 
       success: true, 
