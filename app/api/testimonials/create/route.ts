@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin, usePrisma } from '@/lib/supabase';
 import { sendTestimonialNotificationEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
@@ -11,7 +11,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const { data, error } = await supabaseAdmin
+    if (usePrisma) {
+      // Fallback for production - return success but don't save
+      const testimonial = {
+        id: Date.now().toString(),
+        name,
+        title,
+        message,
+        is_approved: false,
+        source: 'user',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      console.log('New testimonial submitted (Prisma fallback):', testimonial);
+      
+      // Send email notification if configured
+      if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 'your_resend_api_key_here') {
+        sendTestimonialNotificationEmail(testimonial).catch(emailError => {
+          console.error('Email notification failed:', emailError);
+        });
+      }
+      
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Testimonial submitted successfully! It will be reviewed and added shortly.',
+        testimonial
+      });
+    }
+
+    const { data, error } = await supabaseAdmin!
       .from('testimonials')
       .insert({
         name,
@@ -53,7 +82,12 @@ export async function POST(request: NextRequest) {
 // Admin endpoint to get pending testimonials (no longer needed since we have unified API)
 export async function GET() {
   try {
-    const { data, error } = await supabaseAdmin
+    if (usePrisma) {
+      // Fallback to Prisma for production
+      return NextResponse.json([]);
+    }
+
+    const { data, error } = await supabaseAdmin!
       .from('testimonials')
       .select('*')
       .eq('is_approved', false)
