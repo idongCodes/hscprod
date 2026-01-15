@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import FadeIn from "../FadeIn";
+import Image from "next/image";
 
 interface AudioTrack {
   id: string;
@@ -10,6 +11,7 @@ interface AudioTrack {
   duration: string;
   price: number;
   audio_url: string;
+  artist_image?: string;
   created_at: string;
   updated_at: string;
 }
@@ -105,9 +107,21 @@ export default function Media() {
                           className={`group bg-white/5 border border-white/10 hover:border-purple-500/50 rounded-xl p-4 flex flex-col md:flex-row items-center gap-6 transition-all hover:bg-white/[0.07] ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'}`}
                         >
                           
-                          <div className="w-12 h-12 rounded-full bg-purple-900/30 flex items-center justify-center text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors shrink-0 shadow-[0_0_15px_rgba(147,51,234,0.3)]">
-                             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                          </div>
+                          {track.artist_image ? (
+                            <div className="w-12 h-12 rounded-full bg-purple-900/30 flex items-center justify-center text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors shrink-0 shadow-[0_0_15px_rgba(147,51,234,0.3)]">
+                              <Image 
+                                src={track.artist_image} 
+                                alt={track.title}
+                                width={48}
+                                height={48}
+                                className="object-cover rounded-full"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-12 h-12 rounded-full bg-purple-900/30 flex items-center justify-center text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors shrink-0 shadow-[0_0_15px_rgba(147,51,234,0.3)]">
+                               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                          )}
 
                           <div className={`flex-1 w-full text-center ${isEven ? 'md:text-left' : 'md:text-right'}`}>
                             <h3 className="text-white font-bold text-lg">{track.title}</h3>
@@ -131,7 +145,6 @@ export default function Media() {
                           <button className="px-6 py-2 rounded-full bg-white/10 text-white text-xs font-bold hover:bg-purple-600 transition-colors shrink-0 uppercase tracking-widest border border-white/5 hover:border-purple-500">
                             Add to Cart
                           </button>
-
                         </div>
                       );
                     })}
