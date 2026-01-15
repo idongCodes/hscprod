@@ -8,7 +8,7 @@ const pool = new Pool({
 export async function GET() {
   try {
     const result = await pool.query(
-      'SELECT * FROM testimonials WHERE is_approved = true ORDER BY created_at DESC'
+      'SELECT * FROM testimonials WHERE is_approved = 1 ORDER BY created_at DESC'
     );
     
     return NextResponse.json(result.rows);
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     
     const result = await pool.query(
       'INSERT INTO testimonials (name, title, message, is_approved, source, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING *',
-      [name, title, message, false, 'user']
+      [name, title, message, 0, 'user']
     );
     
     console.log('New testimonial submitted:', result.rows[0]);

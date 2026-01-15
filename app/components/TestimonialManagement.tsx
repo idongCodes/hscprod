@@ -8,7 +8,7 @@ interface Testimonial {
   name: string;
   title: string;
   message: string;
-  is_approved: boolean;
+  is_approved: number;
   created_at: string;
   updated_at: string;
   source?: string; // 'database' or 'manual'
@@ -156,8 +156,8 @@ export default function TestimonialManagement() {
     setDeleteDialog({ isOpen: false, testimonialId: null, testimonialName: "" });
   };
 
-  const pendingTestimonials = testimonials.filter(t => t.is_approved === false);
-  const approvedTestimonials = testimonials.filter(t => t.is_approved === true);
+  const pendingTestimonials = testimonials.filter(t => t.is_approved === 0);
+  const approvedTestimonials = testimonials.filter(t => t.is_approved === 1);
 
   if (loading) {
     return (

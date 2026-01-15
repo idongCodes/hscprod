@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
     
-    const isApproved = action === 'approve';
+    const isApproved = action === 'approve' ? 1 : 0;
     
     const result = await pool.query(
       'UPDATE testimonials SET is_approved = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
