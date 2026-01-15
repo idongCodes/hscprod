@@ -75,16 +75,24 @@ export default function Gallery() {
             {mediaItems.map((item) => (
               <div key={item.id} className="group relative aspect-video overflow-hidden cursor-pointer hover:opacity-90 transition-opacity" onClick={() => setSelectedMedia(item)}>
                 {item.media_type === 'video' ? (
-                  <video 
-                    controls={false}
-                    className="w-full h-full object-cover"
-                    preload="metadata"
-                    poster={item.thumbnail_url}
-                    muted
-                  >
-                    <source src={item.file_url} />
-                    Your browser does not support video tag.
-                  </video>
+                  <>
+                    <video 
+                      controls={false}
+                      className="w-full h-full object-cover"
+                      preload="metadata"
+                      poster={item.thumbnail_url}
+                      muted
+                    >
+                      <source src={item.file_url} />
+                      Your browser does not support video tag.
+                    </video>
+                    <div className="absolute top-4 left-4 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                      Video
+                    </div>
+                  </>
                 ) : (
                   <Image 
                     src={item.file_url} 
