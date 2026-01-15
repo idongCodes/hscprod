@@ -1,35 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin, usePrisma } from '@/lib/supabase';
-import { 
-  getProductionTestimonials, 
-  updateProductionTestimonial, 
-  deleteProductionTestimonial 
-} from '@/lib/production-storage';
+import { Pool } from 'pg';
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
 export async function GET() {
   try {
-    console.log('Admin testimonials API called, usePrisma:', usePrisma);
-    
-    if (usePrisma) {
-      // Use production storage
-      const testimonials = getProductionTestimonials();
-      console.log('Admin API returning testimonials:', testimonials.length, 'total');
-      console.log('Pending testimonials:', testimonials.filter(t => t.is_approved === false).length);
-      console.log('Approved testimonials:', testimonials.filter(t => t.is_approved === true).length);
-      return NextResponse.json(testimonials);
-    }
+    const result = await pool.query(
+      'SELECT * FROM testimonials ORDER BY created_at DESC'
+    );
 
-    const { data, error } = await supabaseAdmin!
-      .from('testimonials')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching testimonials:', error);
-      return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
-    }
-
-    return NextResponse.json(data || []);
+    return NextResponse.json(result.rows);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
     return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
@@ -47,35 +29,12 @@ export async function POST(request: NextRequest) {
     
     const isApproved = action === 'approve';
     
-    if (usePrisma) {
-      // Use production storage
-      const updated = updateProductionTestimonial(id, { is_approved: isApproved });
-      
-      if (!updated) {
-        return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
-      }
-      
-      return NextResponse.json({ 
-        success: true, 
-        message: `Testimonial ${action}d successfully`,
-        action,
-        id 
-      });
-    }
+    const result = await pool.query(
+      'UPDATE testimonials SET is_approved = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
+      [isApproved, id]
+    );
     
-    const { data, error } = await supabaseAdmin!
-      .from('testimonials')
-      .update({ is_approved: isApproved })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error updating testimonial:', error);
-      return NextResponse.json({ error: 'Failed to update testimonial' }, { status: 500 });
-    }
-    
-    if (!data) {
+    if (result.rows.length === 0) {
       return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
     }
     
@@ -100,34 +59,12 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Testimonial ID is required' }, { status: 400 });
     }
     
-    if (usePrisma) {
-      // Use production storage
-      const deleted = deleteProductionTestimonial(id);
-      
-      if (!deleted) {
-        return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
-      }
-      
-      return NextResponse.json({ 
-        success: true, 
-        message: 'Testimonial deleted successfully',
-        id 
-      });
-    }
+    const result = await pool.query(
+      'DELETE FROM testimonials WHERE id = $1 RETURNING *',
+      [id]
+    );
     
-    const { data, error } = await supabaseAdmin!
-      .from('testimonials')
-      .delete()
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error deleting testimonial:', error);
-      return NextResponse.json({ error: 'Failed to delete testimonial' }, { status: 500 });
-    }
-    
-    if (!data) {
+    if (result.rows.length === 0) {
       return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
     }
     

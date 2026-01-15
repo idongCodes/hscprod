@@ -1,28 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin, usePrisma } from '@/lib/supabase';
-import { getApprovedProductionTestimonials, addProductionTestimonial } from '@/lib/production-storage';
+import { Pool } from 'pg';
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
 export async function GET() {
   try {
-    if (usePrisma) {
-      // Use production storage
-      const testimonials = getApprovedProductionTestimonials();
-      return NextResponse.json(testimonials);
-    }
-
-    // Get only approved testimonials for public display
-    const { data, error } = await supabaseAdmin!
-      .from('testimonials')
-      .select('*')
-      .eq('is_approved', true)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching testimonials:', error);
-      return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
-    }
-
-    return NextResponse.json(data || []);
+    const result = await pool.query(
+      'SELECT * FROM testimonials WHERE is_approved = true ORDER BY created_at DESC'
+    );
+    
+    return NextResponse.json(result.rows);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
     return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
@@ -37,46 +26,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Name, title, and message are required' }, { status: 400 });
     }
     
-    if (usePrisma) {
-      // Use production storage
-      const testimonial = addProductionTestimonial({
-        name,
-        title,
-        message,
-        is_approved: false,
-        source: 'user'
-      });
-      
-      return NextResponse.json({ 
-        success: true, 
-        message: 'Testimonial submitted successfully! It will appear on site once approved.',
-        testimonial
-      });
-    }
+    const result = await pool.query(
+      'INSERT INTO testimonials (name, title, message, is_approved, source, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING *',
+      [name, title, message, false, 'user']
+    );
     
-    const { data, error } = await supabaseAdmin!
-      .from('testimonials')
-      .insert({
-        name,
-        title,
-        message,
-        is_approved: false,
-        source: 'user'
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error submitting testimonial:', error);
-      return NextResponse.json({ error: 'Failed to submit testimonial' }, { status: 500 });
-    }
-    
-    console.log('New testimonial submitted:', data);
+    console.log('New testimonial submitted:', result.rows[0]);
     
     return NextResponse.json({ 
       success: true, 
       message: 'Testimonial submitted successfully! It will appear on site once approved.',
-      testimonial: data
+      testimonial: result.rows[0]
     });
   } catch (error) {
     console.error('Error submitting testimonial:', error);

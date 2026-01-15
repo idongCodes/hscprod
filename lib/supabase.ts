@@ -4,14 +4,11 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'fallback-key'
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'fallback-service-key'
 
-// Check if we should use Prisma instead of Supabase
-const usePrisma = process.env.USE_PRISMA_INSTEAD_OF_SUPABASE === 'true'
-
 // Public client (for frontend)
-export const supabase = usePrisma ? null : createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Admin client (for server-side operations)
-export const supabaseAdmin = usePrisma ? null : createClient(supabaseUrl, supabaseServiceKey, {
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false
@@ -29,6 +26,3 @@ export interface Testimonial {
   created_at: string
   updated_at: string
 }
-
-// Export flag for conditional logic
-export { usePrisma }
