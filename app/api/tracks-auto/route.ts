@@ -167,7 +167,6 @@ function findArtistImage(artistName: string, artistImages: { [key: string]: stri
 export async function GET() {
   try {
     const tracks = await scanAudioFiles();
-    console.log(`Loaded ${tracks.length} audio files from public folder`);
     return NextResponse.json(tracks);
   } catch (error) {
     console.error('Error fetching audio tracks:', error);
