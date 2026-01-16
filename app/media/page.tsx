@@ -124,9 +124,6 @@ export default function Media() {
 
                           <div className={`flex-1 w-full text-center ${isEven ? 'md:text-left' : 'md:text-right'}`}>
                             <h3 className="text-white font-bold text-lg">{track.title}</h3>
-                            <div className={`flex justify-center gap-3 text-xs text-gray-400 uppercase tracking-wider mt-1 ${isEven ? 'md:justify-start' : 'md:justify-end'}`}>
-                              <span>{track.duration}</span>
-                            </div>
                           </div>
 
                           <div className="w-full md:w-1/3">
