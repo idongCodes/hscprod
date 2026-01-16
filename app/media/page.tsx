@@ -142,9 +142,6 @@ export default function Media() {
                             </audio>
                           </div>
 
-                          <button className="px-6 py-2 rounded-full bg-white/10 text-white text-xs font-bold hover:bg-purple-600 transition-colors shrink-0 uppercase tracking-widest border border-white/5 hover:border-purple-500">
-                            Add to Cart
-                          </button>
                         </div>
                       );
                     })}
