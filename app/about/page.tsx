@@ -62,10 +62,10 @@ export default function About() {
                     NY Drill
                   </span>
                   <span className="px-4 py-1 rounded-full border border-gray-700 text-gray-300 text-sm hover:border-white transition-colors">
-                    Dark Trap
+                    Trap
                   </span>
                   <span className="px-4 py-1 rounded-full border border-gray-700 text-gray-300 text-sm hover:border-white transition-colors">
-                    Jersey Club
+                    R&B
                   </span>
                 </div>
               </div>
