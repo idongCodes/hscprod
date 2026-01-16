@@ -5,6 +5,13 @@ import Link from "next/link";
 import FadeIn from "../FadeIn";
 
 export default function About() {
+  // Calculate HSC's age based on birth date August 9, 2001
+  const birthDate = new Date('2001-08-09');
+  const today = new Date();
+  const age = today.getFullYear() - birthDate.getFullYear() - 
+    (today.getMonth() < birthDate.getMonth() || 
+     (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate()) ? 1 : 0);
+
   return (
     <div className="min-h-screen bg-black pt-32 pb-20 px-4 flex items-center overflow-hidden">
       
@@ -43,7 +50,7 @@ export default function About() {
                    <span>🇮🇪 Irish</span>
                 </div>
                 <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
-                   <span>🎂 24 (Leo)</span>
+                   <span>🎂 {age} (Leo)</span>
                 </div>
               </div>
 
@@ -79,7 +86,7 @@ export default function About() {
               {/* Stats / Quick Info */}
               <div className="mt-10 grid grid-cols-3 gap-6 border-t border-white/10 pt-8">
                 <div>
-                  <h3 className="text-2xl font-bold text-white">9+</h3>
+                  <h3 className="text-2xl font-bold text-white">{age - 15}+</h3>
                   <p className="text-sm text-gray-500 uppercase tracking-wider">Years Exp</p>
                 </div>
                 <div>
