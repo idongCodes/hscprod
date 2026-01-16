@@ -65,14 +65,14 @@ export default function About() {
               
               <div className="space-y-6 text-gray-300 text-lg leading-relaxed">
                 <p>
-                  I am a music producer and audio engineer dedicated to crafting unique soundscapes. 
-                  My goal is to help artists find their signature sound and bring their creative vision to life 
+                  HSC is a music producer and audio engineer dedicated to crafting unique soundscapes. 
+                  Their goal is to help artists find their signature sound and bring their creative vision to life 
                   with industry-standard quality.
                 </p>
                 <p>
-                  With a focus on high-energy instrumentals and clean vocal mixing, I strive to create 
-                  music that not only sounds good but feels right. Whether you need a custom beat, 
-                  mixing and mastering, or full project production, I'm here to work.
+                  With a focus on high-energy instrumentals and clean vocal mixing, HSC strives to create 
+                  music that not only sounds professional but feels right. Whether you need a custom beat, 
+                  mixing and mastering, or full project production, HSC is here to work.
                 </p>
               </div>
 
