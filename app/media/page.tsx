@@ -160,6 +160,9 @@ export default function Media() {
           ))}
         </div>
 
+        {/* CALL TO ACTION SECTION */}
+        <div className="mt-16">
+          <FadeIn>
         {/* Call to Action Section */}
         <FadeIn delay={0.3}>
           <div className="relative mt-32">
@@ -170,6 +173,7 @@ export default function Media() {
                 Ready to <span className="text-purple-500">Create</span>?
               </h2>
               <p className="text-lg text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                Found a beat you love? Need something custom? Let&apos;s work together to bring your vision to life.
                 Found a beat you love? Need something custom? Let&apos;s work together to bring your vision to life. 
                 From individual tracks to full album production, HSC has got you covered.
               </p>
@@ -212,6 +216,9 @@ export default function Media() {
                 </a>
               </div>
             </div>
+          </FadeIn>
+        </div>
+
           </div>
         </FadeIn>
       </div>
