@@ -45,7 +45,7 @@ export default function Footer() {
         <div className="text-gray-500 text-sm">
           Website by{" "}
           <Link 
-            href="https://instagram.com/idongcodes" 
+            href="https://idong-essien.vercel.app" 
             target="_blank" 
             rel="noopener noreferrer"
             className="text-gray-300 hover:text-purple-400 transition-colors font-medium"
