@@ -141,7 +141,7 @@ Add new media by placing files in:
 
 ## 🎵 **Live Demo**
 
-🌐 **[hscprod.com](https://hscprod.com)**
+🌐 **[HSC Productions](https://hscprod.vercel.app/)**
 
 Browse beats, explore services, and connect for custom production work.
 
@@ -153,4 +153,4 @@ Browse beats, explore services, and connect for custom production work.
 
 ---
 
-*Built with ❤️ by the HSC development team*
+*Built with ❤️ by **[idongCodes](https://idong-essien.vercel.app)***
