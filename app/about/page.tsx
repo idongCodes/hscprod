@@ -55,10 +55,10 @@ export default function About() {
                     NY Drill
                   </span>
                   <span className="px-4 py-1 rounded-full border border-gray-700 text-gray-300 text-sm hover:border-white transition-colors">
-                    Dark Trap
+                    Trap
                   </span>
                   <span className="px-4 py-1 rounded-full border border-gray-700 text-gray-300 text-sm hover:border-white transition-colors">
-                    Jersey Club
+                    R&B
                   </span>
                 </div>
               </div>
@@ -79,7 +79,7 @@ export default function About() {
               {/* Stats / Quick Info */}
               <div className="mt-10 grid grid-cols-3 gap-6 border-t border-white/10 pt-8">
                 <div>
-                  <h3 className="text-2xl font-bold text-white">5+</h3>
+                  <h3 className="text-2xl font-bold text-white">9+</h3>
                   <p className="text-sm text-gray-500 uppercase tracking-wider">Years Exp</p>
                 </div>
                 <div>
