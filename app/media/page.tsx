@@ -27,7 +27,6 @@ export default function Media() {
         if (!response.ok) throw new Error('Failed to fetch tracks');
         const audioTracks = await response.json();
         setTracks(audioTracks);
-        console.log('Loaded tracks from auto-scanned files:', audioTracks);
       } catch (error) {
         console.error('Error loading tracks:', error);
         // Fallback to hardcoded tracks if auto-scan fails
@@ -79,7 +78,7 @@ export default function Media() {
               Beats & <span className="text-purple-500">Tracks</span>
             </h1>
             <p className="text-gray-400 max-w-2xl">
-              Browse the catalog. All beats are untagged after purchase. 
+              Browse catalog. All beats are tagged. 
               Instant download available.
             </p>
           </div>
@@ -149,12 +148,18 @@ export default function Media() {
         {/* CALL TO ACTION SECTION */}
         <div className="mt-16">
           <FadeIn>
+        {/* Call to Action Section */}
+        <FadeIn delay={0.3}>
+          <div className="relative mt-32">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-purple-800/10 rounded-2xl blur-xl" />
+            
             <div className="relative bg-gradient-to-br from-purple-900/10 to-purple-800/5 rounded-2xl p-12 border border-purple-500/20 text-center">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
                 Ready to <span className="text-purple-500">Create</span>?
               </h2>
               <p className="text-lg text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
                 Found a beat you love? Need something custom? Let&apos;s work together to bring your vision to life.
+                Found a beat you love? Need something custom? Let&apos;s work together to bring your vision to life. 
                 From individual tracks to full album production, HSC has got you covered.
               </p>
               
@@ -199,6 +204,8 @@ export default function Media() {
           </FadeIn>
         </div>
 
+          </div>
+        </FadeIn>
       </div>
     </div>
   );

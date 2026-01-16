@@ -11,14 +11,14 @@ function scanMediaFiles(directory: string, baseUrl: string): any[] {
   const mediaItems: any[] = [];
   
   try {
-    const files = fs.readdirSync(directory);
+    const files: string[] = fs.readdirSync(directory);
     
     for (const file of files) {
       const filePath = path.join(directory, file);
       const stat = fs.statSync(filePath);
       
-      // Skip directories and files with "logo" in the name (case insensitive)
-      if (stat.isDirectory() || file.toLowerCase().includes('logo')) {
+      // Skip directories and files with "logo" in name (case insensitive, but allow HSC logo)
+      if (stat.isDirectory() || (file.toLowerCase().includes('logo') && !file.toLowerCase().includes('hsc_logo'))) {
         continue;
       }
       
