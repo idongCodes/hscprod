@@ -46,7 +46,7 @@ export default function Media() {
           { id: "12", title: "Bounce Back", genre: "Jersey Club", duration: "2:10", audio_url: "/audio/jersey2.mp3", created_at: "", updated_at: "" },
           { id: "13", title: "Bed Squeak Anthem", genre: "Jersey Club", duration: "2:20", audio_url: "/audio/jersey3.mp3", created_at: "", updated_at: "" },
           { id: "14", title: "Fast Life", genre: "Jersey Club", duration: "2:05", audio_url: "/audio/jersey4.mp3", created_at: "", updated_at: "" },
-          { id: "15", title: "Heartbeat", genre: "Jersey Club", duration: "2:30", audio_url: "/audio/jersey5.mp3", created_at: "", updated_at: "" }
+          { id: "15", title: "Heartbeat", genre: "Jersey Club", duration: "2:30", audio_url: "/audio/jersey5.mp3", created_at: "", updated_at: "" },
         ]);
       } finally {
         setLoading(false);
