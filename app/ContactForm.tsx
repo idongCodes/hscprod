@@ -27,7 +27,20 @@ export default function ContactForm() {
         })
       });
 
-      if (!response.ok) throw new Error('Failed to submit contact form');
+      const data = await response.json();
+      
+      if (!response.ok) {
+        // Handle different error types
+        if (response.status === 429) {
+          throw new Error('Please wait before submitting again. Rate limit: 1 submission per minute.');
+        } else if (response.status === 400 && data.details) {
+          // Show validation errors
+          const validationErrors = data.details.map((err: { message: string }) => err.message).join(', ');
+          throw new Error(validationErrors);
+        } else {
+          throw new Error(data.error || 'Failed to submit contact form');
+        }
+      }
 
       setStatus("success");
       setFormData({ name: "", email: "", message: "" });
@@ -66,6 +79,22 @@ export default function ContactForm() {
             className="mt-6 text-purple-400 hover:text-purple-300 text-sm font-medium"
           >
             Send another message
+          </button>
+        </div>
+      ) : status === "error" ? (
+        <div className="text-center py-12">
+          <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-white mb-2">Error</h3>
+          <p className="text-gray-400 mb-4">Failed to send message. Please try again.</p>
+          <button 
+            onClick={() => setStatus("idle")}
+            className="mt-2 text-purple-400 hover:text-purple-300 text-sm font-medium"
+          >
+            Try again
           </button>
         </div>
       ) : (
