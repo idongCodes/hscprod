@@ -26,7 +26,6 @@ export default function Media() {
         if (!response.ok) throw new Error('Failed to fetch tracks');
         const audioTracks = await response.json();
         setTracks(audioTracks);
-        console.log('Loaded tracks from auto-scanned files:', audioTracks);
       } catch (error) {
         console.error('Error loading tracks:', error);
         // Fallback to hardcoded tracks if auto-scan fails
