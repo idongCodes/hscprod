@@ -43,7 +43,7 @@ export default function About() {
                    <span>🇮🇪 Irish</span>
                 </div>
                 <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
-                   <span>🎂 24 (Leo)</span>
+                   <span>🎂 {age} (Leo)</span>
                 </div>
               </div>
 
