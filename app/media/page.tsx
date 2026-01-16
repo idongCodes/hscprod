@@ -8,8 +8,6 @@ interface AudioTrack {
   id: string;
   title: string;
   genre: string;
-  duration: string;
-  price: number;
   audio_url: string;
   artist_image?: string;
   created_at: string;
@@ -33,21 +31,21 @@ export default function Media() {
         console.error('Error loading tracks:', error);
         // Fallback to hardcoded tracks if auto-scan fails
         setTracks([
-          { id: "1", title: "Brooklyn Nights", genre: "NY Drill", duration: "2:45", price: 29.99, audio_url: "/audio/drill1.mp3", created_at: "", updated_at: "" },
-          { id: "2", title: "Ops Outside", genre: "NY Drill", duration: "3:10", price: 29.99, audio_url: "/audio/drill2.mp3", created_at: "", updated_at: "" },
-          { id: "3", title: "No Suburban", genre: "NY Drill", duration: "2:55", price: 29.99, audio_url: "/audio/drill3.mp3", created_at: "", updated_at: "" },
-          { id: "4", title: "Glacier", genre: "NY Drill", duration: "3:05", price: 34.99, audio_url: "/audio/drill4.mp3", created_at: "", updated_at: "" },
-          { id: "5", title: "Demon Time", genre: "NY Drill", duration: "2:30", price: 29.99, audio_url: "/audio/drill5.mp3", created_at: "", updated_at: "" },
-          { id: "6", title: "Nightmare", genre: "Dark Trap", duration: "3:20", price: 24.99, audio_url: "/audio/trap1.mp3", created_at: "", updated_at: "" },
-          { id: "7", title: "Shadow Realm", genre: "Dark Trap", duration: "2:50", price: 24.99, audio_url: "/audio/trap2.mp3", created_at: "", updated_at: "" },
-          { id: "8", title: "Graveyard Shift", genre: "Dark Trap", duration: "3:15", price: 29.99, audio_url: "/audio/trap3.mp3", created_at: "", updated_at: "" },
-          { id: "9", title: "Venom", genre: "Dark Trap", duration: "2:40", price: 24.99, audio_url: "/audio/trap4.mp3", created_at: "", updated_at: "" },
-          { id: "10", title: "Abyss", genre: "Dark Trap", duration: "3:30", price: 29.99, audio_url: "/audio/trap5.mp3", created_at: "", updated_at: "" },
-          { id: "11", title: "Club Luv", genre: "Jersey Club", duration: "2:15", price: 19.99, audio_url: "/audio/jersey1.mp3", created_at: "", updated_at: "" },
-          { id: "12", title: "Bounce Back", genre: "Jersey Club", duration: "2:10", price: 19.99, audio_url: "/audio/jersey2.mp3", created_at: "", updated_at: "" },
-          { id: "13", title: "Bed Squeak Anthem", genre: "Jersey Club", duration: "2:20", price: 24.99, audio_url: "/audio/jersey3.mp3", created_at: "", updated_at: "" },
-          { id: "14", title: "Fast Life", genre: "Jersey Club", duration: "2:05", price: 19.99, audio_url: "/audio/jersey4.mp3", created_at: "", updated_at: "" },
-          { id: "15", title: "Heartbeat", genre: "Jersey Club", duration: "2:30", price: 24.99, audio_url: "/audio/jersey5.mp3", created_at: "", updated_at: "" }
+          { id: "1", title: "Brooklyn Nights", genre: "NY Drill", audio_url: "/audio/drill1.mp3", created_at: "", updated_at: "" },
+          { id: "2", title: "Ops Outside", genre: "NY Drill", audio_url: "/audio/drill2.mp3", created_at: "", updated_at: "" },
+          { id: "3", title: "No Suburban", genre: "NY Drill", audio_url: "/audio/drill3.mp3", created_at: "", updated_at: "" },
+          { id: "4", title: "Glacier", genre: "NY Drill", audio_url: "/audio/drill4.mp3", created_at: "", updated_at: "" },
+          { id: "5", title: "Demon Time", genre: "NY Drill", audio_url: "/audio/drill5.mp3", created_at: "", updated_at: "" },
+          { id: "6", title: "Nightmare", genre: "Dark Trap", audio_url: "/audio/trap1.mp3", created_at: "", updated_at: "" },
+          { id: "7", title: "Shadow Realm", genre: "Dark Trap", audio_url: "/audio/trap2.mp3", created_at: "", updated_at: "" },
+          { id: "8", title: "Graveyard Shift", genre: "Dark Trap", audio_url: "/audio/trap3.mp3", created_at: "", updated_at: "" },
+          { id: "9", title: "Venom", genre: "Dark Trap", audio_url: "/audio/trap4.mp3", created_at: "", updated_at: "" },
+          { id: "10", title: "Abyss", genre: "Dark Trap", audio_url: "/audio/trap5.mp3", created_at: "", updated_at: "" },
+          { id: "11", title: "Club Luv", genre: "Jersey Club", audio_url: "/audio/jersey1.mp3", created_at: "", updated_at: "" },
+          { id: "12", title: "Bounce Back", genre: "Jersey Club", audio_url: "/audio/jersey2.mp3", created_at: "", updated_at: "" },
+          { id: "13", title: "Bed Squeak Anthem", genre: "Jersey Club", audio_url: "/audio/jersey3.mp3", created_at: "", updated_at: "" },
+          { id: "14", title: "Fast Life", genre: "Jersey Club", audio_url: "/audio/jersey4.mp3", created_at: "", updated_at: "" },
+          { id: "15", title: "Heartbeat", genre: "Jersey Club", audio_url: "/audio/jersey5.mp3", created_at: "", updated_at: "" }
         ]);
       } finally {
         setLoading(false);
@@ -80,7 +78,7 @@ export default function Media() {
               Beats & <span className="text-purple-500">Tracks</span>
             </h1>
             <p className="text-gray-400 max-w-2xl">
-              Browse the catalog. All beats are untagged after purchase. 
+              Browse catalog. All beats are untagged. 
               Instant download available.
             </p>
           </div>
@@ -125,11 +123,6 @@ export default function Media() {
 
                           <div className={`flex-1 w-full text-center ${isEven ? 'md:text-left' : 'md:text-right'}`}>
                             <h3 className="text-white font-bold text-lg">{track.title}</h3>
-                            <div className={`flex justify-center gap-3 text-xs text-gray-400 uppercase tracking-wider mt-1 ${isEven ? 'md:justify-start' : 'md:justify-end'}`}>
-                              <span>{track.duration}</span>
-                              <span>•</span>
-                              <span className="text-purple-400">${track.price}</span>
-                            </div>
                           </div>
 
                           <div className="w-full md:w-1/3">
@@ -141,10 +134,6 @@ export default function Media() {
                               <source src={track.audio_url} type="audio/mpeg" />
                             </audio>
                           </div>
-
-                          <button className="px-6 py-2 rounded-full bg-white/10 text-white text-xs font-bold hover:bg-purple-600 transition-colors shrink-0 uppercase tracking-widest border border-white/5 hover:border-purple-500">
-                            Add to Cart
-                          </button>
                         </div>
                       );
                     })}
