@@ -1,8 +1,26 @@
-"use client";
-
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import FadeIn from "../FadeIn";
+
+export const metadata: Metadata = {
+  title: "About HSC - Music Producer & Beatmaker",
+  description: "Meet HSC - Professional music producer specializing in hip hop, drill, and trap beats. Discover the journey, experience, and production style.",
+  keywords: ["HSC music producer", "hip hop producer", "beatmaker", "music production", "trap beats", "drill beats", "NYC producer", "music artist"],
+  openGraph: {
+    title: "About HSC - Music Producer",
+    description: "Learn about HSC's journey as a music producer and beatmaker in the NYC hip hop scene.",
+    type: "profile",
+    images: ["/images/hsc_logo_blk_bg.JPG"],
+    url: "https://hscprod.com/about",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About HSC - Music Producer",
+    description: "Professional music producer specializing in hip hop, drill, and trap beats.",
+    images: ["/images/hsc_logo_blk_bg.JPG"],
+  },
+};
 
 export default function About() {
   // Calculate HSC's age based on birth date August 9, 2001
