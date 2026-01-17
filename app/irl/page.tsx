@@ -78,11 +78,11 @@ export default function IRL() {
         <FadeIn>
           <div className="mb-16 text-center md:text-left">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-              IRL <span className="text-purple-500">Shows</span>
+              HSC<span className="text-purple-500"> IRL</span>
             </h1>
             <p className="text-gray-400 max-w-2xl">
               Live performances and venue appearances. 
-              See where HSC has been in the building.
+              We Outside, pop out and support HSC.
             </p>
           </div>
         </FadeIn>
@@ -180,7 +180,7 @@ export default function IRL() {
               </h2>
               <p className="text-lg text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
                 Looking to book HSC for a show or event? 
-                From club performances to festival appearances, HSC brings the energy and professionalism you need.
+                From club performances to festival appearances, HSC brings the vibe and professionalism you need.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
