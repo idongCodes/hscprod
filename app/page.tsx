@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import ContactForm from "./ContactForm"; 
@@ -6,6 +7,25 @@ import TestimonialForm from "./TestimonialForm";
 import FadeIn from "./FadeIn";
 import Benefits from "./Benefits";
 import ServicesPricing from "./ServicesPricing";
+
+export const metadata: Metadata = {
+  title: "HSC Prod - Hip Hop Music Producer & Beatmaker",
+  description: "HSC Prod - Professional hip hop music producer and beatmaker from NYC. Specializing in drill, trap, and modern hip hop beats. Stream, collaborate, and license beats.",
+  keywords: ["HSC Prod", "hip hop producer", "beatmaker", "NYC music producer", "drill beats", "trap beats", "music production", "hip hop beats"],
+  openGraph: {
+    title: "HSC Prod - Hip Hop Music Producer",
+    description: "Professional hip hop music producer and beatmaker from NYC. Stream beats and collaborate.",
+    type: "website",
+    images: ["/images/hsc_logo_blk_bg.JPG"],
+    url: "https://hscprod.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HSC Prod - Hip Hop Music Producer",
+    description: "Professional hip hop music producer and beatmaker from NYC. Stream beats and collaborate.",
+    images: ["/images/hsc_logo_blk_bg.JPG"],
+  },
+};
 
 export default function Home() {
   return (

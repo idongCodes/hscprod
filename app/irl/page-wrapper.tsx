@@ -1,5 +1,6 @@
+import { Metadata } from "next";
 import { metadata } from "./metadata";
-import IRLClient from "./client";
+import IRLClient from "./page";
 
 export { metadata };
 
